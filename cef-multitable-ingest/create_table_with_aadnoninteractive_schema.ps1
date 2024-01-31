@@ -1,0 +1,80 @@
+$tableParams = @'
+{
+    "properties": {
+        "schema": {
+            "name": "BasicAADNonInteractive_CL",
+            "columns": [
+
+		{"name":"SourceSystem","type":"string"},
+		{"name":"TimeGenerated","type":"datetime"},
+		{"name":"OperationName","type":"string"},
+		{"name":"OperationVersion","type":"string"},
+		{"name":"Category","type":"string"},
+		{"name":"ResultType","type":"string"},
+		{"name":"ResultSignature","type":"string"},
+		{"name":"ResultDescription","type":"string"},
+		{"name":"DurationMs","type":"long"},
+		{"name":"CorrelationId","type":"string"},
+		{"name":"ResourceGroup","type":"string"},
+		{"name":"Identity","type":"string"},
+		{"name":"Level","type":"string"},
+		{"name":"Location","type":"string"},
+		{"name":"AlternateSignInName","type":"string"},
+		{"name":"AppDisplayName","type":"string"},
+		{"name":"AppId","type":"string"},
+		{"name":"AppliedEventListeners","type":"dynamic"},
+		{"name":"AuthenticationContextClassReferences","type":"string"},
+		{"name":"AuthenticationDetails","type":"string"},
+		{"name":"AuthenticationMethodsUsed","type":"string"},
+		{"name":"AuthenticationProcessingDetails","type":"string"},
+		{"name":"AuthenticationProtocol","type":"string"},
+		{"name":"AuthenticationRequirement","type":"string"},
+		{"name":"AuthenticationRequirementPolicies","type":"string"},
+		{"name":"AutonomousSystemNumber","type":"string"},
+		{"name":"ClientAppUsed","type":"string"},
+		{"name":"ConditionalAccessPolicies","type":"string"},
+		{"name":"ConditionalAccessPoliciesV2","type":"dynamic"},
+		{"name":"ConditionalAccessStatus","type":"string"},
+		{"name":"CreatedDateTime","type":"datetime"},
+		{"name":"CrossTenantAccessType","type":"string"},
+		{"name":"DeviceDetail","type":"string"},
+		{"name":"HomeTenantId","type":"string"},
+		{"name":"IPAddress","type":"string"},
+		{"name":"IsInteractive","type":"bool"},
+		{"name":"IsRisky","type":"bool"},
+		{"name":"LocationDetails","type":"string"},
+		{"name":"MfaDetail","type":"string"},
+		{"name":"NetworkLocationDetails","type":"string"},
+		{"name":"OriginalRequestId","type":"string"},
+		{"name":"ProcessingTimeInMs","type":"string"},
+		{"name":"ResourceDisplayName","type":"string"},
+		{"name":"ResourceIdentity","type":"string"},
+		{"name":"ResourceServicePrincipalId","type":"string"},
+		{"name":"ResourceTenantId","type":"string"},
+		{"name":"RiskDetail","type":"string"},
+		{"name":"RiskEventTypes","type":"string"},
+		{"name":"RiskEventTypes_V2","type":"string"},
+		{"name":"RiskLevelAggregated","type":"string"},
+		{"name":"RiskLevelDuringSignIn","type":"string"},
+		{"name":"RiskState","type":"string"},
+		{"name":"ServicePrincipalId","type":"string"},
+		{"name":"SessionLifetimePolicies","type":"string"},
+		{"name":"SignInEventTypes","type":"string"},
+		{"name":"SignInIdentifierType","type":"string"},
+		{"name":"Status","type":"string"},
+		{"name":"TokenIssuerName","type":"string"},
+		{"name":"TokenIssuerType","type":"string"},
+		{"name":"UniqueTokenIdentifier","type":"string"},
+		{"name":"UserAgent","type":"string"},
+		{"name":"UserDisplayName","type":"string"},
+		{"name":"UserId","type":"string"},
+		{"name":"UserPrincipalName","type":"string"},
+		{"name":"UserType","type":"string"}
+
+            ]
+        }
+    }
+}
+'@
+
+Invoke-AzRestMethod -Path "(your sentinel path)/tables/BasicAADNonInteractive_CL?api-version=2021-12-01-preview" -Method PUT -payload $tableParams
