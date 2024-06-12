@@ -27,7 +27,7 @@
     The name of the new table to be created.
 
 .EXAMPLE
-    ./tableCreator.ps1 -tenantId "your-tenant-id" -subscriptionId "your-subscription-id" -resourceGroup "your-resource-group" -workspaceName "your-workspace-name" -workspaceId "your-workspace-id" -tableName "your-table-name" -newTableName "your-new-table-name"
+    ./psTableCreator.ps1 -tenantId "your-tenant-id" -subscriptionId "your-subscription-id" -resourceGroup "your-resource-group" -workspaceName "your-workspace-name" -workspaceId "your-workspace-id" -tableName "your-table-name" -newTableName "your-new-table-name"
 
 #>
 
