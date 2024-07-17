@@ -29,7 +29,7 @@ else {
 }
 
 # Exclude specific columns by name
-$columns = $queryResult | Where-Object { $_.ColumnName -notin @("TenantId", "Type", "Id") } | ForEach-Object {
+$columns = $queryResult | Where-Object { $_.ColumnName -notin @("TenantId", "Type", "Id", "MG") } | ForEach-Object {
     @{
         "name" = $_.ColumnName
         "type" = $_.ColumnType
