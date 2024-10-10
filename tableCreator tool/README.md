@@ -1,5 +1,6 @@
-# tableCreator.ps1
+# tableCreator.ps1 (v1)
 - a tool to capture the schema of existing Sentinel table, and create new table with same schema!
+
 
 ### Usage:
 
