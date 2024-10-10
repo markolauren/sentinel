@@ -1,6 +1,13 @@
-# tableCreator.ps1 (v1)
+# tableCreator.ps1 (v2)
 💡 Tool to capture the schema of existing Sentinel table, and create new table with same schema!
 
+### What's new
+🆕 Support for choosing table plan/type: Analytics, Basic, Aux/Auxiliary
+🆕 Support for defining interactive retention (for Analytics tier)
+🆕 Support for defining total retention
+🆕 Improved error handling
+🆕 Command line & visual improvements
+💡 Auxiliary plan is in preview and has some limitations. Script will try to cope with those (eg. drops columns with "dynamic" type). Also user always needs to set total retention as 365 (at least for now).
 
 ### Usage:
 
@@ -11,8 +18,11 @@
 
 2) **Run the tool IN AZURE CLOUD SHELL !!**
 
-- ./tableCreator.ps1 - and you will be asked TableName which schema we want to use, and NEW TableName which will be created using the same schema
+- ./tableCreator.ps1 - and you will be asked TableName which schema we want to use, and new TableName which will be created using the same schema, table type, retention and total retention.
+
+![screenshot](https://github.com/user-attachments/assets/951c0756-0bf8-474f-9712-9308c066d879)
 
 &nbsp;&nbsp;&nbsp;OR
 
-- ./tableCreator.ps1 -tableName existing_table_where_we_get_the_schema -newTableName new_table_we_create_based_on_same_schema
+- .\tableCreator.ps1 -tableName <TableName> -newTableName <NewTableName> -type <analytics|basic|aux|auxiliary> -retention <RetentionInDays> -totalRetention <TotalRetentionInDays>
+- Example: .\tableCreator.ps1 -tableName MyTable -newTableName MyNewTable_CL -type analytics -retention 180 -totalRetention 365
