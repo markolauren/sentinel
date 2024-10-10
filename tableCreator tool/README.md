@@ -15,6 +15,8 @@
 
 - $workspaceId = "YOUR_WORKSPACE_ID"
 - $resourceId = "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/YOUR_RESOURCE_GROUP/providers/Microsoft.OperationalInsights/workspaces/YOUR_WORKSPACE_NAME"
+ <br/>
+ To obtain this information, open "Log Analytics workspaces" in Azure - choose your Workspace - choose Properties - and you will find both.<br/>
 
 2) **Run the tool IN AZURE CLOUD SHELL !!**
 
