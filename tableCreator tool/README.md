@@ -7,6 +7,7 @@
 1) Modify the script with your own Sentinel
 
 $workspaceId = "YOUR_WORKSPACE_ID"
+
 $resourceId = "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/YOUR_RESOURCE_GROUP/providers/Microsoft.OperationalInsights/workspaces/YOUR_WORKSPACE_NAME"
 
 3) Run the tool IN AZURE CLOUD SHELL !!
