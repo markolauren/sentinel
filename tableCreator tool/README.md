@@ -1,5 +1,6 @@
 # tableCreator.ps1 (v2)
 💡 Tool to capture the schema of existing Sentinel table, and create new table with same schema!
+https://github.com/markolauren/sentinel/blob/main/tableCreator%20tool/tableCreator.ps1
 
 ### What's new
 🆕 Support for choosing table plan/type: Analytics, Basic, Aux/Auxiliary <br/>
