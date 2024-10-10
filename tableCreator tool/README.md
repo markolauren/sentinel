@@ -18,12 +18,12 @@
 
 2) **Run the tool IN AZURE CLOUD SHELL !!**
 
-- ./tableCreator.ps1 - and you will be asked TableName which schema we want to use, and new TableName which will be created using the same schema, table type, retention and total retention.
+- **./tableCreator.ps1** - and you will be asked TableName which schema we want to use, and new TableName which will be created using the same schema, table type, retention and total retention.
 
 ![screenshot](https://github.com/user-attachments/assets/951c0756-0bf8-474f-9712-9308c066d879)
 
 &nbsp;&nbsp;&nbsp;OR
 
-- Command line usage: .\tableCreator.ps1 -tableName <TableName> -newTableName <NewTableName> -type <analytics|basic|aux|auxiliary> -retention <RetentionInDays> -totalRetention <TotalRetentionInDays><br/>
+- **Command line usage**: .\tableCreator.ps1 -tableName <TableName> -newTableName <NewTableName> -type <analytics|basic|aux|auxiliary> -retention <RetentionInDays> -totalRetention <TotalRetentionInDays><br/>
 <br/>
 &nbsp;&nbsp;Example: .\tableCreator.ps1 -tableName MyTable -newTableName MyNewTable_CL -type analytics -retention 180 -totalRetention 365
