@@ -1,7 +1,7 @@
-tableCreator.ps1
-- a tool to capture Sentinel table SCHEMA and create new table with same schema!
+# tableCreator.ps1
+- a tool to capture the schema of existing Sentinel table, and create new table with same schema!
 
-Usage:
+### Usage:
 
 1) Modify the script with your own Sentinel 
 $workspaceId = "YOUR_WORKSPACE_ID"
