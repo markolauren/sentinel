@@ -2,7 +2,8 @@
 # Command line usage:
 # .\tableCreator.ps1 -tableName <TableName> -newTableName <NewTableName> -type <analytics|basic|aux|auxiliary> -retention <RetentionInDays> -totalRetention <TotalRetentionInDays>
 # Example:
-# .\tableCreator.ps1 -tableName MyTable -newTableName MyNewTable_CL -type analytics -retention 180 -totalRetention 365##################################################################################################################
+# .\tableCreator.ps1 -tableName MyTable -newTableName MyNewTable_CL -type analytics -retention 180 -totalRetention 365
+##################################################################################################################
 
 # Define parameters for the script
 param (
