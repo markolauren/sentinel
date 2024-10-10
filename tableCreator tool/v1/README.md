@@ -1,4 +1,4 @@
-# tableCreator.ps1 (v1)
+# tableCreator.ps1 (old v1)
 💡 Tool to capture the schema of existing Sentinel table, and create new table with same schema!
 
 
