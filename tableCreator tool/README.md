@@ -2,12 +2,12 @@
 💡 Tool to capture the schema of existing Sentinel table, and create new table with same schema!
 
 ### What's new
-🆕 Support for choosing table plan/type: Analytics, Basic, Aux/Auxiliary
-🆕 Support for defining interactive retention (for Analytics tier)
-🆕 Support for defining total retention
-🆕 Improved error handling
-🆕 Command line & visual improvements
-💡 Auxiliary plan is in preview and has some limitations. Script will try to cope with those (eg. drops columns with "dynamic" type). Also user always needs to set total retention as 365 (at least for now).
+🆕 Support for choosing table plan/type: Analytics, Basic, Aux/Auxiliary <br/>
+🆕 Support for defining interactive retention (for Analytics tier) <br/>
+🆕 Support for defining total retention <br/>
+🆕 Improved error handling <br/>
+🆕 Command line & visual improvements <br/>
+💡 Auxiliary plan is in preview and has some limitations. Script will try to cope with those (eg. drops columns with "dynamic" type). Also user always needs to set total retention as 365 (at least for now). <br/>
 
 ### Usage:
 
