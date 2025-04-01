@@ -15,8 +15,8 @@ param (
 )
 
 ##################################################################################################################
-#$workspaceId = "YOUR_WORKSPACE_ID"
-#$resourceId = "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/YOUR_RESOURCE_GROUP/providers/Microsoft.OperationalInsights/workspaces/YOUR_WORKSPACE_NAME"
+$workspaceId = "YOUR_WORKSPACE_ID"
+$resourceId = "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/YOUR_RESOURCE_GROUP/providers/Microsoft.OperationalInsights/workspaces/YOUR_WORKSPACE_NAME"
 ##################################################################################################################
 
 # Display the banner
