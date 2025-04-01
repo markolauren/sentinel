@@ -2,6 +2,8 @@
 💡 Tool to capture the schema of existing Sentinel table, and create new table with same schema!
 https://github.com/markolauren/sentinel/blob/main/tableCreator%20tool/tableCreator.ps1
 
+⚠️ Due to some issue with Azure CLI & Cloud Shell (az monitor log-analytics query command) this script is currently not functional. Tracking it here: https://github.com/Azure/azure-cli/issues/31168
+
 ### What's new
 🆕 Support for choosing table plan/type: Analytics, Basic, Aux/Auxiliary <br/>
 🆕 Support for defining interactive retention (for Analytics tier) <br/>
