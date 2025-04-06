@@ -1,8 +1,8 @@
-# tableCreator.ps1 (v2)
-💡 Tool to capture the schema of existing Sentinel table, and create new table with same schema!
+# tableCreator.ps1 (v2.01) - UPDATED 6.4.2025
+### 💡 A tool to capture the schema of existing Sentinel table, and create new table with same schema!
 https://github.com/markolauren/sentinel/blob/main/tableCreator%20tool/tableCreator.ps1
 
-⚠️ Due to some issue with Azure CLI & Cloud Shell (az monitor log-analytics query command) this script is currently not functional. Tracking it here: https://github.com/Azure/azure-cli/issues/31168
+_(Due to some issue with Azure CLI & Cloud Shell (az monitor log-analytics query command) script v2 stopped working, however new v2.01 now uses API instead and works. Tracking the issue here: https://github.com/Azure/azure-cli/issues/31168)_
 
 ### What's new
 🆕 Support for choosing table plan/type: Analytics, Basic, Aux/Auxiliary <br/>
@@ -10,15 +10,13 @@ https://github.com/markolauren/sentinel/blob/main/tableCreator%20tool/tableCreat
 🆕 Support for defining total retention <br/>
 🆕 Improved error handling <br/>
 🆕 Command line & visual improvements <br/>
-💡 Auxiliary plan is in preview and has some limitations. Script will try to cope with those (eg. drops columns with "dynamic" type). Also user always needs to set total retention as 365 (at least for now). <br/>
 
 ### Usage:
 
 1) **Modify the script with your own Sentinel**
 
-- $workspaceId = "YOUR_WORKSPACE_ID"<br/>
 - $resourceId = "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/YOUR_RESOURCE_GROUP/providers/Microsoft.OperationalInsights/workspaces/YOUR_WORKSPACE_NAME"<br/>
- (To obtain this information, open "Log Analytics workspaces" in Azure - choose your Workspace - choose Properties - and you will find both.)<br/><br/>
+ (To obtain this information, open "Log Analytics workspaces" in Azure - choose your Workspace - choose Properties - Resource ID)<br/><br/>
 
 2) **Run the tool IN AZURE CLOUD SHELL !!**
 
