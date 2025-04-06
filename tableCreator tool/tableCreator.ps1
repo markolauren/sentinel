@@ -15,14 +15,13 @@ param (
 )
 
 ##################################################################################################################
-$workspaceId = "YOUR_WORKSPACE_ID"
 $resourceId = "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/YOUR_RESOURCE_GROUP/providers/Microsoft.OperationalInsights/workspaces/YOUR_WORKSPACE_NAME"
 ##################################################################################################################
 
 # Display the banner
-Write-Host " +=====================+"
-Write-Host " | tableCreator.ps1 v2 |"
-Write-Host " +=====================+"
+Write-Host " +========================+"
+Write-Host " | tableCreator.ps1 v2.01 |"
+Write-Host " +========================+"
 Write-Host ""
 
 # Function to repeatedly prompt for input until a valid value is entered
@@ -79,14 +78,39 @@ if (-not $totalRetention) {
 }
 
 # Suppress output for the az config command
-az config set extension.use_dynamic_install=yes_without_prompt *>$null
+#az config set extension.use_dynamic_install=yes_without_prompt *>$null
 
 # Set query to get the schema of the specified table
 $query = "$tableName | getschema | project ColumnName, ColumnType"
 
 # Query the workspace to get the schema
 Write-Host "[Querying $tableName table schema...]"
-$queryResult = az monitor log-analytics query -w $workspaceId --analytics-query $query -o json | ConvertFrom-Json
+
+### OLD IMPLEMENTATION #############################################################################################
+#$queryResult = az monitor log-analytics query -w $workspaceId --analytics-query $query -o json | ConvertFrom-Json
+####################################################################################################################
+
+### NEW IMPLEMENTATION #############################################################################################
+$body = @{
+    query = $query
+} | ConvertTo-Json -Depth 2
+
+$response = Invoke-AzRestMethod -Path "$resourceId/query?api-version=2017-10-01" -Method POST  -Payload $body
+
+# do the mapping
+$data = $response.Content | ConvertFrom-Json
+$columns = $data.tables[0].columns
+$rows = $data.tables[0].rows
+
+$queryResult = $rows | ForEach-Object {
+    $object = @{}
+    for ($i = 0; $i -lt $columns.Count; $i++) {
+        $object[$columns[$i].name] = $_[$i]
+    }
+    [pscustomobject]$object
+}
+
+####################################################################################################################
 
 $exitCode = $LASTEXITCODE
 
