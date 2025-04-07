@@ -88,7 +88,17 @@ Write-Host "[Querying $tableName table schema...]"
 
 ### OLD IMPLEMENTATION #############################################################################################
 #$queryResult = az monitor log-analytics query -w $workspaceId --analytics-query $query -o json | ConvertFrom-Json
-####################################################################################################################
+#
+#$exitCode = $LASTEXITCODE
+#
+## Check the exit code for success or failure
+#if ($exitCode -eq 0) {
+#    Write-Host "[Table schema successfully captured]"
+#} else {
+#    Write-Host "ERROR executing the query. Exit code: $exitCode"
+#    exit
+#}
+### OLD IMPLEMENTATION ENDS ########################################################################################
 
 ### NEW IMPLEMENTATION #############################################################################################
 $body = @{
@@ -97,8 +107,20 @@ $body = @{
 
 $response = Invoke-AzRestMethod -Path "$resourceId/query?api-version=2017-10-01" -Method POST  -Payload $body
 
-# do the mapping
+# Convert Content from JSON string to PowerShell object
 $data = $response.Content | ConvertFrom-Json
+
+# Check if the response contains StatusCode
+if ($response.StatusCode -eq 200 -or $response.StatusCode -eq 202) {
+    Write-Host "[Table schema successfully captured]"
+} else {
+    # Output error details if the creation failed
+    Write-Host "[Error] Failed to query the table '$TableName'. Status code: $($response.StatusCode)" -ForegroundColor Red
+    
+    exit
+}
+
+# do the mapping to queryResult
 $columns = $data.tables[0].columns
 $rows = $data.tables[0].rows
 
@@ -110,17 +132,8 @@ $queryResult = $rows | ForEach-Object {
     [pscustomobject]$object
 }
 
-####################################################################################################################
+### NEW IMPLEMENTATION ENDS ########################################################################################
 
-$exitCode = $LASTEXITCODE
-
-# Check the exit code for success or failure
-if ($exitCode -eq 0) {
-    Write-Host "[Table schema successfully captured]"
-} else {
-    Write-Host "ERROR executing the query. Exit code: $exitCode"
-    exit
-}
 
 # Exclude specific columns by name and prepare the columns for tableParams
 $columns = $queryResult | Where-Object {
