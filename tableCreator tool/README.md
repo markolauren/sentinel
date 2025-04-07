@@ -1,4 +1,4 @@
-# tableCreator.ps1 (v2.01) - UPDATED 6.4.2025
+# tableCreator.ps1 (v2.01) - UPDATED 7.4.2025
 ### 💡 A tool to capture the schema of existing Sentinel table, and create new table with same schema!
 https://github.com/markolauren/sentinel/blob/main/tableCreator%20tool/tableCreator.ps1
 
