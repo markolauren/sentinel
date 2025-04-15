@@ -20,7 +20,7 @@ $resourceId = "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/YOUR_RESOURCE_
 
 # Display the banner
 Write-Host " +========================+"
-Write-Host " | tableCreator.ps1 v2.01 |"
+Write-Host " | tableCreator.ps1 v2.02 |"
 Write-Host " +========================+"
 Write-Host ""
 
@@ -144,13 +144,20 @@ $columns = $queryResult | Where-Object {
     if (!( $type -eq "auxiliary" -and $_.ColumnType -eq "dynamic")) {
 
 	## AUX uses column type boolean istead of bool, which is weird.
-	if ($type -eq "auxiliary" -and $_.ColumnType -eq "bool") { $_.ColumnType = "boolean" }
+	if ($type -eq "auxiliary" -and $_.ColumnType -eq "bool") { 
+        $_.ColumnType = "boolean" 
+    }
 
-        # Include the column in the result
-        @{
-            "name" = $_.ColumnName
-            "type" = $_.ColumnType
-        }
+    # Check if the table name is "SecurityEvent" and specific columns which are type guid. Getschema fails to report these properly, so it needs some manual intervention.
+    if ($_.ColumnName -in @("InterfaceUuid", "LogonGuid", "SourceComputerId", "SubcategoryGuid", "TargetLogonGuid") -and $tableName -eq "SecurityEvent") {
+        $_.ColumnType = "guid"
+    }
+
+    # Include the column in the result
+    @{
+        "name" = $_.ColumnName
+        "type" = $_.ColumnType
+    }
 #        Write-Host "[DEBUG - INCL $($_.ColumnName) - $($_.ColumnType)"
 
     } else {
