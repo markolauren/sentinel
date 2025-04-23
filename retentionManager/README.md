@@ -10,8 +10,7 @@ https://github.com/markolauren/sentinel/blob/main/retentionManager/retentionMana
 
 ![tables1](https://github.com/user-attachments/assets/359543e1-0e74-4173-844a-f759bc1595bb)
 
-
-### Usage:
+### Usage
 
 .\retentionManager.ps1 **-TenantID** xxxx-xxxx-xxxx-xxxx [-All]
 
@@ -23,7 +22,10 @@ https://github.com/markolauren/sentinel/blob/main/retentionManager/retentionMana
 - Choose Sentinel / Log analytics workspace.
 - Work with your tables & retentions ⚙️
 
-### Credits:
+### Why?
+Because this (https://techcommunity.microsoft.com/blog/microsoftsentinelblog/configuring-archive-period-for-tables-at-mass-for-data-retention-within-log-anal/4118220) is too difficult.
+
+### Credits
 This tool is a fork from Sreedhar Ande's Configure-Long-Term-Retention.ps1 tool: https://github.com/Azure/Azure-Sentinel/tree/master/Tools/Archive-Log-Tool/ArchiveLogsTool-PowerShell
 
 ### Filter & Choose (use crtl / shift)
