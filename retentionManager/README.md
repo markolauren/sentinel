@@ -15,10 +15,10 @@
 
 - If not provided in command line, tool will ask your tenant id.
 - Tool will ask to update Az Modules.
-- Log in using your azure credentials + potential conditional access requirements apply. (NOTE: for "automatically sign in to all desktop apps and websites on this device" the correct answer mostly is "No, this app only")
-- Choose subscription
-- Choose Sentinel / Log analytics workspace
-- Work with your tables & retentions
+- Log in using your azure credentials + potential conditional access requirements apply. 
+- Choose subscription.
+- Choose Sentinel / Log analytics workspace.
+- Work with your tables & retentions ⚙️
 <br/>
 
 ### Filter & Choose (use crtl / shift)
