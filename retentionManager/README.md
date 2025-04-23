@@ -1,6 +1,8 @@
 # retentionManager.ps1 (v1.0)
 ### 💡 PowerShell tool to configure total retention & interactive retention for Sentinel/Log Analytics tables
 
+https://github.com/markolauren/sentinel/blob/main/retentionManager/retentionManager.ps1
+
 ### Features
 ✅ Fetch Sentinel/Log analytics tables and retention configuration<br/>
 ✅ Use Filter & search <br/>
