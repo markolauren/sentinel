@@ -11,15 +11,18 @@
 
 ### Usage:
 
-.\retentionManager.ps1 **-TenantID** xxxx-xxxx-xxxx-xxxx
+.\retentionManager.ps1 **-TenantID** xxxx-xxxx-xxxx-xxxx [-All]
 
 - If not provided in command line, tool will ask your tenant id.
+- By default, only used tables are listed. If you really want to see them all, use -All switch.
 - Tool will ask to update Az Modules.
 - Log in using your azure credentials + potential conditional access requirements apply. 
 - Choose subscription.
 - Choose Sentinel / Log analytics workspace.
 - Work with your tables & retentions ⚙️
-<br/>
+
+### Credits:
+This tool is a fork from Sreedhar Ande's Configure-Long-Term-Retention.ps1 tool: https://github.com/Azure/Azure-Sentinel/tree/master/Tools/Archive-Log-Tool/ArchiveLogsTool-PowerShell
 
 ### Filter & Choose (use crtl / shift)
 ![filter](https://github.com/user-attachments/assets/47f591d1-2093-49cc-8e80-d23fda38309e)
