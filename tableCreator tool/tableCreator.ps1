@@ -1,8 +1,14 @@
 ##################################################################################################################
 # Command line usage:
 # .\tableCreator.ps1 -tableName <TableName> -newTableName <NewTableName> -type <analytics|basic|aux|auxiliary> -retention <RetentionInDays> -totalRetention <TotalRetentionInDays>
-# Example:
-# .\tableCreator.ps1 -tableName MyTable -newTableName MyNewTable_CL -type analytics -retention 180 -totalRetention 365
+#
+# For Auxiliary tables, use the -ConvertToString switch to convert dynamic columns to string.
+#
+# The script will prompt for any missing parameters.
+#
+# Examples:
+# .\tableCreator.ps1 -tableName MyTable -newTableName MyNewTable_CL -type analytics -retention 180 -totalRetention 365 
+# .\tableCreator.ps1 -ConvertToString
 ##################################################################################################################
 
 # Define parameters for the script
@@ -11,7 +17,8 @@ param (
     [string]$newTableName,
     [string]$type,
     [int]$retention,
-    [int]$totalRetention
+    [int]$totalRetention,
+    [switch]$ConvertToString
 )
 
 ##################################################################################################################
@@ -19,9 +26,9 @@ $resourceId = "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/YOUR_RESOURCE_
 ##################################################################################################################
 
 # Display the banner
-Write-Host " +========================+"
-Write-Host " | tableCreator.ps1 v2.02 |"
-Write-Host " +========================+"
+Write-Host " +=======================+"
+Write-Host " | tableCreator.ps1 v2.1  |"
+Write-Host " +=======================+"
 Write-Host ""
 
 # Function to repeatedly prompt for input until a valid value is entered
@@ -113,7 +120,8 @@ $data = $response.Content | ConvertFrom-Json
 # Check if the response contains StatusCode
 if ($response.StatusCode -eq 200 -or $response.StatusCode -eq 202) {
     Write-Host "[Table schema successfully captured]"
-} else {
+}
+else {
     # Output error details if the creation failed
     Write-Host "[Error] Failed to query the table '$TableName'. Status code: $($response.StatusCode)" -ForegroundColor Red
     
@@ -134,43 +142,63 @@ $queryResult = $rows | ForEach-Object {
 
 ### NEW IMPLEMENTATION ENDS ########################################################################################
 
+$StringList = @()
 
 # Exclude specific columns by name and prepare the columns for tableParams
 $columns = $queryResult | Where-Object {
     $_.ColumnName -notin @("TenantId", "Type", "Id", "MG")
 } | ForEach-Object {
 
-    ## AUX do not support dynamic tables
-    if (!( $type -eq "auxiliary" -and $_.ColumnType -eq "dynamic")) {
-
-	## AUX uses column type boolean istead of bool, which is weird.
-	if ($type -eq "auxiliary" -and $_.ColumnType -eq "bool") { 
+    ## AUX uses column type boolean istead of bool, which is weird.
+    if ($type -eq "auxiliary" -and $_.ColumnType -eq "bool") { 
         $_.ColumnType = "boolean" 
+    }
+
+    # Check if the column type is dynamic and if ConvertToString is set
+    if ($type -eq "auxiliary" -and $_.ColumnType -eq "dynamic") {
+        if ($ConvertToString) { 
+
+            $StringList += $_.ColumnName  # Add to array for later processing
+
+            $_.ColumnName = $_.ColumnName + "_str"
+            $_.ColumnType = "string"
+
+            #Write-Host "[DEBUG - CONVERTED $($_.ColumnName) - $($_.ColumnType)"        
+        } 
     }
 
     # Check if the table name is "SecurityEvent" and specific columns which are type guid. Getschema fails to report these properly, so it needs some manual intervention.
     if ($_.ColumnName -in @("InterfaceUuid", "LogonGuid", "SourceComputerId", "SubcategoryGuid", "TargetLogonGuid") -and $tableName -eq "SecurityEvent") {
         $_.ColumnType = "guid"
     }
-
-    # Include the column in the result
-    @{
-        "name" = $_.ColumnName
-        "type" = $_.ColumnType
+    # Check if the table name is "SigninLogs" and specific columns which are type guid. Getschema fails to report these properly, so it needs some manual intervention.
+    if ($_.ColumnName -in @("OriginalRequestId") -and $tableName -eq "SigninLogs") {
+        $_.ColumnType = "guid"
     }
-#        Write-Host "[DEBUG - INCL $($_.ColumnName) - $($_.ColumnType)"
+
+     ## AUX do not support dynamic tables
+    if ($type -eq "auxiliary" -and $_.ColumnType -eq "dynamic" -and !($ConvertToString)) {
+
+        # Log the skipping message
+        Write-Host "[SKIPPING $($_.ColumnName) due to Dynamic type which is not supported by Auxiliary table, use -ConvertToString to convert it to String]" 
 
     } else {
-        # Log the skipping message
-        Write-Host "[SKIPPING $($_.ColumnName) due to Dynamic type which is not supported by Auxiliary table]"
+        # Include the column in the result
+        @{
+            "name" = $_.ColumnName
+            "type" = $_.ColumnType
+        }
+        #Write-Host "[DEBUG - INCL $($_.ColumnName) - $($_.ColumnType)"
+
     }
+
 }
 
 # Construct the base tableParams for the new table
 $tableParams = @{
     "properties" = @{
         "schema" = @{
-            "name" = $newTableName
+            "name"    = $newTableName
             "columns" = $columns
         }
     }
@@ -225,7 +253,8 @@ $response = Invoke-AzRestMethod -Path "$resourceId/tables/${newTableName}?api-ve
 # Check if the response contains StatusCode
 if ($response.StatusCode -eq 200 -or $response.StatusCode -eq 202) {
     Write-Host "[Success] Table '$newTableName' created successfully with status code: $($response.StatusCode)" -ForegroundColor Green
-} else {
+}
+else {
     # Output error details if the creation failed
     Write-Host "[Error] Failed to create table '$newTableName'. Status code: $($response.StatusCode)" -ForegroundColor Red
     
@@ -236,7 +265,22 @@ if ($response.StatusCode -eq 200 -or $response.StatusCode -eq 202) {
     if ($content.error) {
         Write-Host "[Error] Code: $($content.error.code)" -ForegroundColor Red
         Write-Host "[Error] Message: $($content.error.message)" -ForegroundColor Red
-    } else {
+    }
+    else {
         Write-Host "[Error] No detailed error information available." -ForegroundColor Red
     }
+}
+
+# Check if there are any columns to converted to string and output the transformation KQL
+if ($StringList) {
+    $extendParts = ""
+    foreach ($col in $StringList) {
+        $newCol = $col + "_str"
+        $extendParts += "$newCol = tostring($col), "
+    }
+    $transformKql = "source | extend $extendParts"
+    $transformKql = $transformKql.Substring(0, $transformKql.Length - 2)
+    Write-Host ""
+    Write-Host "NOTICE: There were Dynamic columns in the table and they were converted to String (as requested). Please include this in the DCR:"
+    Write-Host "`"transformKql`": `"$transformKql`""
 }
