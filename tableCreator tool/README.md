@@ -1,11 +1,13 @@
-# tableCreator.ps1 (v2.02) - UPDATED 15.4.2025
+# tableCreator.ps1 (v2.1) - UPDATED 21.5.2025
 ### 💡 A tool to capture the schema of existing Sentinel table, and create new table with same schema!
 https://github.com/markolauren/sentinel/blob/main/tableCreator%20tool/tableCreator.ps1
 
 _(Due to some issue with Azure CLI & Cloud Shell (az monitor log-analytics query command) script v2 stopped working, however new v2.01+ now uses API instead and works. Tracking the issue here: https://github.com/Azure/azure-cli/issues/31168)_
 
-### What's new
-🆕 Support for choosing table plan/type: Analytics, Basic, Aux/Auxiliary <br/>
+### What's new in v2.1
+🆕 Support for -ConvertToString flag: Use with Aux logs to convert dynamic columns to string <br/> 
+
+### What's new in v2.0
 🆕 Support for defining interactive retention (for Analytics tier) <br/>
 🆕 Support for defining total retention <br/>
 🆕 Improved error handling <br/>
@@ -27,9 +29,12 @@ _(Due to some issue with Azure CLI & Cloud Shell (az monitor log-analytics query
 &nbsp;&nbsp;&nbsp;OR
 
 - **Command line usage**:<br/>
-.\tableCreator.ps1 **-tableName** tableName **-newTableName** newTableName **-type** <analytics|basic|aux|auxiliary> **-retention** retentionInDays **-totalRetention** TotalRetentionInDays<br/>
+.\tableCreator.ps1 **-tableName** tableName **-newTableName** newTableName **-type** <analytics|basic|aux|auxiliary> **-retention** retentionInDays **-totalRetention** TotalRetentionInDays (**-ConvertToString**)<br/>
 
-Example: .\tableCreator.ps1 -tableName MyTable -newTableName MyNewTable_CL -type analytics -retention 180 -totalRetention 365
+Examples: <br/>
+.\tableCreator.ps1 -tableName MyTable -newTableName MyNewTable_CL -type analytics -retention 180 -totalRetention 365 <br/>
+.\tableCreator.ps1 -tableName CommonSecurityLog -newTableName AuxCommonSecLog_CL -type aux -retention 30 -totalRetention 365 <br/>
+.\tableCreator.ps1 -tableName AADNonInteractiveUserSignInLogs -newTableName AADNonInteractiveSignin_CL -type aux -retention 30 -totalRetention 365 -ConvertToString <br/>
 
 
 #### NOTICE: 
