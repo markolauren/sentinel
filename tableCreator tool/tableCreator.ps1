@@ -27,7 +27,7 @@ $resourceId = "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/YOUR_RESOURCE_
 
 # Display the banner
 Write-Host " +=======================+"
-Write-Host " | tableCreator.ps1 v2.1  |"
+Write-Host " | tableCreator.ps1 v2.1 |"
 Write-Host " +=======================+"
 Write-Host ""
 
