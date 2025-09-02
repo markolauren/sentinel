@@ -1,8 +1,9 @@
-# tableCreator.ps1 (v2.1) - UPDATED 21.5.2025
+# tableCreator.ps1 (v2.2) - UPDATED 2.9.2025
 ### 💡 A tool to capture the schema of existing Sentinel table, and create new table with same schema!
 https://github.com/markolauren/sentinel/blob/main/tableCreator%20tool/tableCreator.ps1
 
-_(Due to some issue with Azure CLI & Cloud Shell (az monitor log-analytics query command) script v2 stopped working, however new v2.01+ now uses API instead and works. Tracking the issue here: https://github.com/Azure/azure-cli/issues/31168)_
+### What's new in v2.2
+🆕 Data lake tier support <br/> 
 
 ### What's new in v2.1
 🆕 Support for -ConvertToString flag: Use with Aux logs to convert dynamic columns to string <br/> 
