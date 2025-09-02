@@ -1,8 +1,8 @@
 ##################################################################################################################
 # Command line usage:
-# .\tableCreator.ps1 -tableName <TableName> -newTableName <NewTableName> -type <analytics|basic|aux|auxiliary> -retention <RetentionInDays> -totalRetention <TotalRetentionInDays>
+# .\tableCreator.ps1 -tableName <TableName> -newTableName <NewTableName> -type <analytics|dl|datalake|aux|auxiliary|basic> -retention <RetentionInDays> -totalRetention <TotalRetentionInDays>
 #
-# For Auxiliary tables, use the -ConvertToString switch to convert dynamic columns to string.
+# For Auxiliary/Data lake tables, use the -ConvertToString switch to convert dynamic columns to string.
 #
 # The script will prompt for any missing parameters.
 #
@@ -27,7 +27,7 @@ $resourceId = "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/YOUR_RESOURCE_
 
 # Display the banner
 Write-Host " +=======================+"
-Write-Host " | tableCreator.ps1 v2.1 |"
+Write-Host " | tableCreator.ps1 v2.2 |"
 Write-Host " +=======================+"
 Write-Host ""
 
@@ -50,16 +50,23 @@ function PromptForInput {
 
 # Prompt for input if necessary
 if (-not $tableName) {
-    $tableName = PromptForInput "Enter TableName to get Schema from"
+    $tableName = PromptForInput "Enter Table Name to get Schema from"
 } 
 
 if (-not $newTableName) {
-    $newTableName = PromptForInput "Enter new TableName to be created with the same Schema (remember _CL -suffix)"
+    $newTableName = PromptForInput "Enter new Table Name to be created with the same Schema (remember _CL -suffix)"
 }
 
 # Prompt for table type, defaulting to 'analytics' if not provided
 if (-not $type) {
-    $type = Read-Host -Prompt "Enter table type (analytics, basic or aux/auxiliary, or press Enter for default 'analytics')"
+    $type = Read-Host -Prompt "Enter table type (analytics, dl/datalake, aux/auxiliary or basic, or press Enter for default 'analytics')"
+}
+
+$datalake = $false
+
+if ($type.ToLower() -eq "datalake" -or $type.ToLower() -eq "dl") {
+    $datalake = $true
+    $type = "auxiliary"
 }
 
 if ($type.ToLower() -eq "aux") { $type = "auxiliary" }
@@ -77,35 +84,23 @@ if (-not $type -or -not ($validTypes -contains $type)) {
 
 # Prompt for retention values if not provided
 if (-not $retention -and $type -eq "analytics") {
-    $retention = Read-Host -Prompt "Enter interactive retention in days (30-730) or press Enter for workspace default"
+    $retention = Read-Host -Prompt "Enter analytics retention in days (4-730) or press Enter for workspace default"
 }
 
 if (-not $totalRetention) {
-    $totalRetention = Read-Host -Prompt "Enter total retention in days (30-4383) or press Enter for table default"
+    if ($type -ne "analytics") {
+        Write-Host "Allowed values for total retention: 30-730 days, 1095 (3 yr), 1460 (4 yr), 1826 (5 yr), 2191 (6 yr), 2556 (7 yr), 2922 (8 yr), 3288 (9 yr), 3653 (10 yr), 4018 (11 yr), 4383 (12 yr)"
+    } else {
+        Write-Host "Allowed values for total retention: $retention-730 days, 1095 (3 yr), 1460 (4 yr), 1826 (5 yr), 2191 (6 yr), 2556 (7 yr), 2922 (8 yr), 3288 (9 yr), 3653 (10 yr), 4018 (11 yr), 4383 (12 yr)"
+    }
+    $totalRetention = Read-Host -Prompt "Enter total retention in days or press Enter for table default"
 }
-
-# Suppress output for the az config command
-#az config set extension.use_dynamic_install=yes_without_prompt *>$null
 
 # Set query to get the schema of the specified table
 $query = "$tableName | getschema | project ColumnName, ColumnType"
 
 # Query the workspace to get the schema
 Write-Host "[Querying $tableName table schema...]"
-
-### OLD IMPLEMENTATION #############################################################################################
-#$queryResult = az monitor log-analytics query -w $workspaceId --analytics-query $query -o json | ConvertFrom-Json
-#
-#$exitCode = $LASTEXITCODE
-#
-## Check the exit code for success or failure
-#if ($exitCode -eq 0) {
-#    Write-Host "[Table schema successfully captured]"
-#} else {
-#    Write-Host "ERROR executing the query. Exit code: $exitCode"
-#    exit
-#}
-### OLD IMPLEMENTATION ENDS ########################################################################################
 
 ### NEW IMPLEMENTATION #############################################################################################
 $body = @{
@@ -180,7 +175,7 @@ $columns = $queryResult | Where-Object {
     if ($type -eq "auxiliary" -and $_.ColumnType -eq "dynamic" -and !($ConvertToString)) {
 
         # Log the skipping message
-        Write-Host "[SKIPPING $($_.ColumnName) due to Dynamic type which is not supported by Auxiliary table, use -ConvertToString to convert it to String]" 
+        Write-Host "[SKIPPING $($_.ColumnName) due to Dynamic type which is not supported by Data lake/Auxiliary table, use -ConvertToString to convert it to String]" -ForegroundColor Yellow
 
     } else {
         # Include the column in the result
@@ -208,37 +203,43 @@ $tableParams = @{
 switch ($type.ToLower()) {
     "auxiliary" {
         $tableParams.properties.plan = "Auxiliary"
-        Write-Host "[Plan set to Auxiliary]"
-        Write-Host "[Interactive retention is always 30 days]"
+
+        if ($datalake) {
+            Write-Host "[Plan set to Data Lake]"
+        } else {
+            Write-Host "[Plan set to Auxiliary]"
+            Write-Host "[Interactive retention is set to 30 days]"
+        }
+
     }
     "analytics" {
         $tableParams.properties.plan = "Analytics"
         Write-Host "[Plan set to Analytics]"
-        if ($retention -ge 30 -and $retention -le 730) {
+        if ($retention -ge 4 -and $retention -le 730) {
             $tableParams.properties.retentionInDays = $retention
-            Write-Host "[Interactive retention set to $retention days]"
+            Write-Host "[Analytics retention set to $retention days]"
         }
     }
     "basic" {
         $tableParams.properties.plan = "Basic"
         Write-Host "[Plan set to Basic]"
-        Write-Host "[Interactive retention is always 30 days]"
+        Write-Host "[Interactive retention is set to 30 days]"
     }
     default {
         Write-Host "Invalid type provided. Using default 'analytics'."
         $tableParams.properties.plan = "Analytics"
         Write-Host "[Plan set to Analytics]"
-        if ($retention -ge 30 -and $retention -le 730) {
+        if ($retention -ge 4 -and $retention -le 730) {
             $tableParams.properties.retentionInDays = $retention
-            Write-Host "[Interactive Retention set to $retention days]"
+            Write-Host "[Analytics retention set to $retention days]"
         }
     }
 }
 
 # Set totalRetentionInDays based on the input condition
-if ($totalRetention -ge 30 -and $totalRetention -le 4383) { 
+if ($totalRetention -ge 4 -and $totalRetention -le 4383) { 
     $tableParams.properties.totalRetentionInDays = $totalRetention 
-    Write-Host "[Total retention set to $totalRetention days]"
+    Write-Host "[Total retention set to $totalRetention days]"    
 } 
 
 # Convert tableParams to JSON for the API call
@@ -281,6 +282,6 @@ if ($StringList) {
     $transformKql = "source | extend $extendParts"
     $transformKql = $transformKql.Substring(0, $transformKql.Length - 2)
     Write-Host ""
-    Write-Host "NOTICE: There were Dynamic columns in the table and they were converted to String (as requested). Please include this in the DCR:"
-    Write-Host "`"transformKql`": `"$transformKql`""
+    Write-Host "NOTICE: There were Dynamic columns in the table and they were converted to String (as requested). Please include this in the DCR:" -ForegroundColor Yellow
+    Write-Host "`"transformKql`": `"$transformKql`"" -ForegroundColor Yellow
 }
