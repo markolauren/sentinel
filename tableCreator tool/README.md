@@ -3,7 +3,8 @@
 https://github.com/markolauren/sentinel/blob/main/tableCreator%20tool/tableCreator.ps1
 
 ### What's new in v2.3
-🆕 Supprot for -FullResourceId option to define your Sentinel resourceID directly in a command line, no script editing necessary anymore. Kudos to TristankMS <br/> 
+🆕 Support for -FullResourceId option to define your Sentinel resourceID directly in a command line, no script editing necessary anymore. Kudos to TristankMS <br/> 
+🆕 If resource id isn't provided (either via command line or modified within the script), it will be prompted. <br/> 
 
 ### What's new in v2.2
 🆕 Data lake tier support <br/> 
