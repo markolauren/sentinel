@@ -1,10 +1,15 @@
 ##################################################################################################################
 # Command line usage:
-# .\tableCreator.ps1 -tableName <TableName> -newTableName <NewTableName> -type <analytics|dl|datalake|aux|auxiliary|basic> -retention <RetentionInDays> -totalRetention <TotalRetentionInDays>
+# .\tableCreator.ps1 -FullResourceId <SentinelResourceId> -tableName <TableName> -newTableName <NewTableName> -type <analytics|dl|datalake|aux|auxiliary|basic> -retention <RetentionInDays> -totalRetention <TotalRetentionInDays>
 #
 # For Auxiliary/Data lake tables, use the -ConvertToString switch to convert dynamic columns to string.
 #
 # The script will prompt for any missing parameters.
+#
+# If you want to hardcode the ResourceID for your environment, edit the $resourceId variable in the script, in line 42.
+# Resource ID can be found in Log Analytics Workspace, hit 'JSON View' and then the copy button at the top of the JSON pane.
+#
+# Use -tenantId <TenantId> if you are not using Azure cloud shell (you need to have Azure Powershell module installed).
 #
 # Examples:
 # .\tableCreator.ps1 -tableName MyTable -newTableName MyNewTable_CL -type analytics -retention 180 -totalRetention 365 
@@ -13,6 +18,7 @@
 
 # Define parameters for the script
 param (
+    [string]$tenantId,
     [string]$tableName,
     [string]$newTableName,
     [string]$type,
@@ -40,6 +46,11 @@ if($FullResourceId){
     $resourceId = $FullResourceId
 }
 ##################################################################################################################
+
+# Connect Azure Account, no need to run in Cloud Shell, but you do need the Az module installed. 
+if ($tenantId) {
+    Connect-AzAccount -TenantId $tenantId
+}
 
 # Display the banner
 Write-Host " +=======================+"
