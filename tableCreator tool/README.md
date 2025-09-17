@@ -3,8 +3,9 @@
 https://github.com/markolauren/sentinel/blob/main/tableCreator%20tool/tableCreator.ps1
 
 ### What's new in v2.3
-🆕 Support for -FullResourceId option to define your Sentinel resourceID directly in a command line, no script editing necessary anymore. Kudos to TristankMS <br/> 
+🆕 Support for -FullResourceId option to define your Sentinel resourceID directly in a command line, no script editing necessary anymore (Kudos to TristankMS). <br/> 
 🆕 If resource id isn't provided (either via command line or modified within the script), it will be prompted. <br/> 
+🆕 Support for -tenantId option to allow usage without Azure cloud shell <br/> 
 
 ### What's new in v2.2
 🆕 Data lake tier support <br/> 
@@ -20,24 +21,25 @@ https://github.com/markolauren/sentinel/blob/main/tableCreator%20tool/tableCreat
 
 ### Usage:
 
-1) **Define your Sentinel resourceID**  <br/>
-Use -FullResourceId switch to define your Sentinel resourceID <br/>
+**(1) Define your Sentinel resourceID**  <br/>
+
+Use -FullResourceId to define your Sentinel resourceID <br/>
 _tableCreator.ps1 -FullResourceID /subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/YOUR_RESOURCE_GROUP/providers/Microsoft.OperationalInsights/workspaces/YOUR_WORKSPACE_NAME_ <br/>
 **OR** <br/>
-Modify the script with (line 36) your own Sentinel resourceID <br/>
+Modify the script (line 42) with your Sentinel resourceID <br/>
 _$resourceId = "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/YOUR_RESOURCE_GROUP/providers/Microsoft.OperationalInsights/workspaces/YOUR_WORKSPACE_NAME"_ <br/>
  (To obtain this information, open "Log Analytics workspaces" in Azure - choose your Workspace - choose Properties - Resource ID)<br/><br/>
 
-2) **Run the tool IN AZURE CLOUD SHELL !!**
+**(2) Run the tool in Azure Cloud Shell** (or just use -tenantId option to log in - requires Azure PowerShell module installed)
 
-- **./tableCreator.ps1** - and you will be asked TableName which schema we want to use, and new TableName which will be created using the same schema, table type, retention and total retention.
+**./tableCreator.ps1** - and you will be asked TableName which schema we want to use, and new TableName which will be created using the same schema, table type, retention and total retention.
 
 ![screenshot](https://github.com/user-attachments/assets/951c0756-0bf8-474f-9712-9308c066d879)
 
 &nbsp;&nbsp;&nbsp;OR
 
-- **Command line usage**:<br/>
-.\tableCreator.ps1 **-tableName** tableName **-newTableName** newTableName **-type** <analytics|basic|aux|auxiliary> **-retention** retentionInDays **-totalRetention** TotalRetentionInDays (**-ConvertToString**) (**-FullResourceId** sentinelResourceId)<br/>
+**Command line usage**:<br/>
+.\tableCreator.ps1 (**-FullResourceId** sentinelResourceId) **-tableName** tableName **-newTableName** newTableName **-type** <analytics|basic|aux|auxiliary> **-retention** retentionInDays **-totalRetention** TotalRetentionInDays (**-ConvertToString**) <br/>
 
 Examples: <br/>
 .\tableCreator.ps1 -tableName MyTable -newTableName MyNewTable_CL -type analytics -retention 180 -totalRetention 365 <br/>
