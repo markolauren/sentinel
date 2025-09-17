@@ -64,6 +64,19 @@ function PromptForInput {
     return $inputValue
 }
 
+# Check if the resourceId is still the default placeholder value
+if ($resourceId -eq "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/YOUR_RESOURCE_GROUP/providers/Microsoft.OperationalInsights/workspaces/YOUR_WORKSPACE_NAME") {
+
+    $resourceId = PromptForInput "Enter Sentinel Resource Id"
+
+    # Validate the entered resourceId format
+    if ($resourceId -notmatch '^/subscriptions/[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}/resourcegroups/[a-zA-Z0-9-_]+/providers/microsoft.operationalinsights/workspaces/[a-zA-Z0-9-_]+$') {
+        Write-Host "`n'$resourceId' doesn't look like a valid resource id. Please provide the full resource ID in the correct format." -ForegroundColor Red
+        Write-Host "(format: /subscriptions/<subscription-id>/resourceGroups/<resource-group>/providers/microsoft.operationalinsights/workspaces/<workspace-name>)" -ForegroundColor Red
+        exit
+    }
+}
+
 # Prompt for input if necessary
 if (-not $tableName) {
     $tableName = PromptForInput "Enter Table Name to get Schema from"
