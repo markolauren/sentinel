@@ -1,54 +1,85 @@
-# tableCreator.ps1 (v2.3) - UPDATED 17.9.2025
-### 💡 A tool to capture the schema of existing Sentinel table, and create new table with same schema!
-https://github.com/markolauren/sentinel/blob/main/tableCreator%20tool/tableCreator.ps1
+# 💡 tableCreator.ps1 (v2.4)
 
-### What's new in v2.3
-🆕 Support for -FullResourceId option to define your Sentinel resourceID directly in a command line, no script editing necessary anymore (Kudos to TristankMS). <br/> 
-🆕 If resource id isn't provided (either via command line or modified within the script), it will be prompted. <br/> 
-🆕 Support for -tenantId option to allow usage without Azure cloud shell <br/> 
+**Author:** Marko Lauren
 
-### What's new in v2.2
-🆕 Data lake tier support <br/> 
+## Purpose
 
-### What's new in v2.1
-🆕 Support for -ConvertToString flag: Use with Aux logs to convert dynamic columns to string <br/> 
+`tableCreator.ps1` is a PowerShell script designed to streamline the process of duplicating the schema of an existing Microsoft Sentinel table and creating a new table with the same schema. The script supports Analytics, Data Lake, Auxiliary and Basic table types. This tool is ideal for scenarios such as streaming the logs to table with different/cheaper plan or splitting log to multiple tables.
 
-### What's new in v2.0
-🆕 Support for defining interactive retention (for Analytics tier) <br/>
-🆕 Support for defining total retention <br/>
-🆕 Improved error handling <br/>
-🆕 Command line & visual improvements <br/>
+## Key Features
 
-### Usage:
+- **Data Lake Table Creation:** Easily create new tables with the same schema as existing tables.
+- **Schema Duplication:** Automatically capture and reuse the schema from any existing Sentinel table.
+- **Flexible Table Types:** Supports Analytics, Data Lake, Auxiliary and Basic types.
+- **Retention Settings:** Define both interactive and total retention periods for new tables.
+- **Dynamic Column Handling:** Optionally convert dynamic columns to string for compatibility with Data Lake and Auxiliary tables.
+- **Interactive & Command-Line Modes:** Use prompts for missing parameters or provide all options via command line.
+- **Resource Targeting:** Specify your Sentinel workspace via parameter or prompt.
+- **Tenant Selection:** Use `-tenantId` for authentication outside Azure Cloud Shell.
 
-**(1) Define your Sentinel resourceID**  <br/>
+## Usage
 
-Use -FullResourceId to define your Sentinel resourceID <br/>
-_tableCreator.ps1 -FullResourceID /subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/YOUR_RESOURCE_GROUP/providers/Microsoft.OperationalInsights/workspaces/YOUR_WORKSPACE_NAME_ <br/>
-**OR** <br/>
-Modify the script (line 42) with your Sentinel resourceID <br/>
-_$resourceId = "/subscriptions/YOUR_SUBSCRIPTION_ID/resourceGroups/YOUR_RESOURCE_GROUP/providers/Microsoft.OperationalInsights/workspaces/YOUR_WORKSPACE_NAME"_ <br/>
- (To obtain this information, open "Log Analytics workspaces" in Azure - choose your Workspace - choose Properties - Resource ID)<br/><br/>
+### 1. Define Your Sentinel Resource ID
 
-**(2) Run the tool in Azure Cloud Shell** (or just use -tenantId option to log in - requires Azure PowerShell module installed)
+You can provide the resource ID in two ways:
 
-**./tableCreator.ps1** - and you will be asked TableName which schema we want to use, and new TableName which will be created using the same schema, table type, retention and total retention.
+- **Command-Line:**  
+  ```
+  .\tableCreator.ps1 -FullResourceId "/subscriptions/<SUBSCRIPTION_ID>/resourceGroups/<RESOURCE_GROUP>/providers/Microsoft.OperationalInsights/workspaces/<WORKSPACE_NAME>"
+  ```
+- **Script Modification:**  
+  Edit the script and set:
+  ```powershell
+  $resourceId = "/subscriptions/<SUBSCRIPTION_ID>/resourceGroups/<RESOURCE_GROUP>/providers/Microsoft.OperationalInsights/workspaces/<WORKSPACE_NAME>"
+  ```
+
+If not provided, the script will prompt you for the resource ID.
+
+### 2. Run the Script
+
+You can run the script interactively or with full command-line parameters.
+
+#### Interactive Mode
+
+Run:
+```
+.\tableCreator.ps1
+```
+You will be prompted for the source table name, new table name, table type, and retention settings.
+
+#### Command-Line Mode
+
+Specify all required parameters:
+```
+.\tableCreator.ps1 -FullResourceId <RESOURCE_ID> -tableName <SourceTable> -newTableName <NewTable> -type <datalake|dl|analytics|basic|aux|auxiliary> -retention <Days> -totalRetention <Days> [-ConvertToString] [-tenantId <TenantId>]
+```
+
+**Examples:**
+```
+.\tableCreator.ps1 -tableName MyTable -newTableName MyAnalyticsTable_CL -type analytics -retention 180 -totalRetention 365
+.\tableCreator.ps1 -tableName MyTable -newTableName MyDLTable_CL -type datalake -totalRetention 365
+.\tableCreator.ps1 -tableName MyTable -newTableName MyAuxTable_CL -type aux -totalRetention 365 -ConvertToString
+```
+
+### Parameters
+
+- `-FullResourceId` : (Optional) Full Azure Resource ID of the Sentinel workspace.
+- `-tableName` : Name of the existing table to copy schema from.
+- `-newTableName` : Name for the new table.
+- `-type` : Table type (`analytics`, `datalake`/`dl`, `auxiliary`/`aux`, `basic`).
+- `-retention` : Interactive/analytics retention in days.
+- `-totalRetention` : Total retention in days.
+- `-ConvertToString` : (Optional) Convert dynamic columns to string (recommended for Data Lake and Auxiliary tables).
+- `-tenantId` : (Optional) Azure tenant ID for authentication.
+
+## Notes
+
+- The script uses KQL `getschema` to retrieve table schemas. Columns of type `guid` are reported as `string` due to unknown reason. If the table you're creating a copy has guid type column(s) it causes a mismatch with column types when creating DCR. Workaround is to modify DCR with transformKql:
+"transformKql": "source | extend SomeGuid = tostring(SomeGuid), AnotherGuid = tostring(AnotherGuid)"
+Another workaround is to debug the script and interpret those columns on the fly. This is already done for SecurityEvent and SigninLogs table.
+
+## Screenshot
 
 ![screenshot](https://github.com/user-attachments/assets/951c0756-0bf8-474f-9712-9308c066d879)
 
-&nbsp;&nbsp;&nbsp;OR
-
-**Command line usage**:<br/>
-.\tableCreator.ps1 (**-FullResourceId** sentinelResourceId) **-tableName** tableName **-newTableName** newTableName **-type** <analytics|basic|aux|auxiliary> **-retention** retentionInDays **-totalRetention** TotalRetentionInDays (**-ConvertToString**) <br/>
-
-Examples: <br/>
-.\tableCreator.ps1 -tableName MyTable -newTableName MyNewTable_CL -type analytics -retention 180 -totalRetention 365 <br/>
-.\tableCreator.ps1 -tableName CommonSecurityLog -newTableName AuxCommonSecLog_CL -type aux -retention 30 -totalRetention 365 <br/>
-.\tableCreator.ps1 -tableName AADNonInteractiveUserSignInLogs -newTableName AADNonInteractiveSignin_CL -type aux -retention 30 -totalRetention 365 -ConvertToString <br/>
-
-
-#### NOTICE: 
-This tool uses kql "getschema", and for some reason it reports all the columns with type "guid" as "string". <br/>
-If the table you're creating a copy has guid type column(s) it causes a mismatch with column types when creating DCR. Workaround is to modify DCR with transformKql:<br/>
-_"transformKql": "source | extend SomeGuid = tostring(SomeGuid), AnotherGuid = tostring(AnotherGuid)"_ <br/>
-Another workaround is to debug the script and interpret those columns on the fly. This is already done for SecurityEvent table. 
+---

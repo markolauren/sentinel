@@ -1,20 +1,48 @@
-##################################################################################################################
-# Command line usage:
-# .\tableCreator.ps1 -FullResourceId <SentinelResourceId> -tableName <TableName> -newTableName <NewTableName> -type <analytics|dl|datalake|aux|auxiliary|basic> -retention <RetentionInDays> -totalRetention <TotalRetentionInDays>
-#
-# For Auxiliary/Data lake tables, use the -ConvertToString switch to convert dynamic columns to string.
-#
-# The script will prompt for any missing parameters.
-#
-# If you want to hardcode the ResourceID for your environment, edit the $resourceId variable in the script, in line 42.
-# Resource ID can be found in Log Analytics Workspace, hit 'JSON View' and then the copy button at the top of the JSON pane.
-#
-# Use -tenantId <TenantId> if you are not using Azure cloud shell (you need to have Azure Powershell module installed).
-#
-# Examples:
-# .\tableCreator.ps1 -tableName MyTable -newTableName MyNewTable_CL -type analytics -retention 180 -totalRetention 365 
-# .\tableCreator.ps1 -ConvertToString
-##################################################################################################################
+<#
+.SYNOPSIS
+    Creates a new Sentinel table with the same schema as an existing table.
+
+.DESCRIPTION
+    This script queries the schema of an existing Sentinel table and creates a new table with the same schema.
+    It supports Analytics, Auxiliary/Data Lake, and Basic table types, and allows for retention settings and conversion of dynamic columns to string for Auxiliary/Data Lake tables.
+    The script prompts for any missing parameters and can be run interactively or with command-line arguments.
+
+.PARAMETER FullResourceId
+    The full resource ID of the Sentinel/Log Analytics Workspace. If not provided, you will be prompted.
+    Resource ID can be found in Log Analytics Workspace > JSON View > Copy button.
+    To hardcode the Resource ID for your environment, edit the $resourceId variable in the script (line 70).
+
+.PARAMETER tableName
+    The name of the existing table to copy the schema from (e.g., SecurityEvent).
+
+.PARAMETER newTableName
+    The name of the new table to be created (e.g., MyNewTable_CL). Remember to include the _CL suffix for custom tables.
+
+.PARAMETER type
+    The table type: analytics (default), dl/datalake, aux/auxiliary, or basic. 
+
+.PARAMETER retention
+    Retention in days for analytics tables (4-730). If not provided, the workspace default is used.
+
+.PARAMETER totalRetention
+    Total retention in days for the table. 
+    Allowed values: 4-730 days, 1095 (3 yr), 1460 (4 yr), 1826 (5 yr), 2191 (6 yr), 2556 (7 yr), 2922 (8 yr), 3288 (9 yr), 3653 (10 yr), 4018 (11 yr), 4383 (12 yr).
+
+.PARAMETER ConvertToString
+    For Auxiliary/Data Lake tables, converts dynamic columns to string. 
+    PRO TIP: If the copied table has dynamic columns, you may create it initially as Analytics, and then change to Data Lake later. This will preserve the dynamic types.
+
+.PARAMETER tenantId
+    Azure tenant ID. Required only if not running in Azure Cloud Shell.
+    Requires the Az PowerShell module installed.
+
+.EXAMPLE
+    .\tableCreator.ps1 -tableName MyTable -newTableName MyNewTable_CL -type analytics -retention 180 -totalRetention 365
+
+.EXAMPLE
+    .\tableCreator.ps1 -ConvertToString
+
+#>
 
 # Define parameters for the script
 param (
@@ -53,9 +81,9 @@ if ($tenantId) {
 }
 
 # Display the banner
-Write-Host " +=======================+"
-Write-Host " | tableCreator.ps1 v2.3 |"
-Write-Host " +=======================+"
+Write-Host " +=======================+" -ForegroundColor Green
+Write-Host " | tableCreator.ps1 v2.4 |" -ForegroundColor Green
+Write-Host " +=======================+" -ForegroundColor Green
 Write-Host ""
 
 # Function to repeatedly prompt for input until a valid value is entered
@@ -142,7 +170,7 @@ $query = "$tableName | getschema | project ColumnName, ColumnType"
 # Query the workspace to get the schema
 Write-Host "[Querying $tableName table schema...]"
 
-### NEW IMPLEMENTATION #############################################################################################
+# Construct the request body
 $body = @{
     query = $query
 } | ConvertTo-Json -Depth 2
@@ -152,14 +180,14 @@ $response = Invoke-AzRestMethod -Path "$resourceId/query?api-version=2017-10-01"
 # Convert Content from JSON string to PowerShell object
 $data = $response.Content | ConvertFrom-Json
 
-# Check if the response contains StatusCode
+# Check if the response is successful
 if ($response.StatusCode -eq 200 -or $response.StatusCode -eq 202) {
     Write-Host "[Table schema successfully captured]"
 }
 else {
     # Output error details if the creation failed
     Write-Host "[Error] Failed to query the table '$TableName'. Status code: $($response.StatusCode)" -ForegroundColor Red
-    
+
     exit
 }
 
@@ -175,8 +203,7 @@ $queryResult = $rows | ForEach-Object {
     [pscustomobject]$object
 }
 
-### NEW IMPLEMENTATION ENDS ########################################################################################
-
+## Prepare an array to hold names of columns converted to string
 $StringList = @()
 
 # Exclude specific columns by name and prepare the columns for tableParams
@@ -184,7 +211,7 @@ $columns = $queryResult | Where-Object {
     $_.ColumnName -notin @("TenantId", "Type", "Id", "MG")
 } | ForEach-Object {
 
-    ## AUX uses column type boolean istead of bool, which is weird.
+    ## Aux/datalake uses column type boolean istead of bool
     if ($type -eq "auxiliary" -and $_.ColumnType -eq "bool") { 
         $_.ColumnType = "boolean" 
     }
@@ -211,7 +238,7 @@ $columns = $queryResult | Where-Object {
         $_.ColumnType = "guid"
     }
 
-     ## AUX do not support dynamic tables
+     ## Aux do not support dynamic tables
     if ($type -eq "auxiliary" -and $_.ColumnType -eq "dynamic" -and !($ConvertToString)) {
 
         # Log the skipping message
@@ -291,7 +318,7 @@ Write-Host "[Initiating new table $newTableName creation (or updating if it exis
 # Create the new Sentinel table
 $response = Invoke-AzRestMethod -Path "$resourceId/tables/${newTableName}?api-version=2023-01-01-preview" -Method PUT -Payload $tableParamsJson
 
-# Check if the response contains StatusCode
+# Check if the response is successful
 if ($response.StatusCode -eq 200 -or $response.StatusCode -eq 202) {
     Write-Host "[Success] Table '$newTableName' created successfully with status code: $($response.StatusCode)" -ForegroundColor Green
 }
