@@ -80,6 +80,6 @@ Another workaround is to debug the script and interpret those columns on the fly
 
 ## Screenshot
 
-![screenshot](https://github.com/user-attachments/assets/951c0756-0bf8-474f-9712-9308c066d879)
+![screenshot](https://github.com/user-attachments/assets/6732b1fb-b83a-4dcf-911b-6143e1098ec5)
 
 ---
