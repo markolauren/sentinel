@@ -79,7 +79,7 @@
             "timeContextFromParameter": "TimeRange",
             "queryType": 1,
             "resourceType": "microsoft.resourcegraph/resources",
-            "value": null
+            "value": "/subscriptions/6858c465-1182-4bf4-81ae-78abd312aa93/resourceGroups/vet-unifiedsecops-rg/providers/Microsoft.OperationalInsights/workspaces/vet-unifiedsecops"
           },
           {
             "id": "653abca7-aa76-4bb1-bb1c-e023036b59d2",
@@ -110,7 +110,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "Usage\r\n| where DataType == tolower(DataType)\r\n| summarize IngestedGB=sum(Quantity)/1024\r\n| project RoundedIngestedGB=case(IngestedGB < 1, tostring(round(IngestedGB, 2)),\r\n                                 IngestedGB < 10, tostring(round(IngestedGB, 1)),\r\n                                 tostring(toint(round(IngestedGB, 0))))\r\n| project strcat(RoundedIngestedGB, \" GB\")",
+        "query": "Usage\r\n| where MeterId == \"00000000-0000-0000-0000-000000000000\"\r\n| summarize IngestedGB=sum(Quantity)/1024\r\n| project RoundedIngestedGB=case(IngestedGB < 1, tostring(round(IngestedGB, 2)),\r\n                                 IngestedGB < 10, tostring(round(IngestedGB, 1)),\r\n                                 tostring(toint(round(IngestedGB, 0))))\r\n| project strcat(RoundedIngestedGB, \" GB\")",
         "size": 3,
         "title": "Total Ingestion Volume",
         "timeContextFromParameter": "TimeRange",
@@ -153,7 +153,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "Usage\r\n| where DataType == tolower(DataType)\r\n| project TimeGenerated, DataType, Quantity\r\n| summarize IngestionVolumeMB=sum(Quantity) by bin(TimeGenerated, {TimeRange:grain}), DataType  ",
+        "query": "Usage\r\n| where MeterId == \"00000000-0000-0000-0000-000000000000\"\r\n| project TimeGenerated, DataType, Quantity\r\n| summarize IngestionVolumeMB=sum(Quantity) by bin(TimeGenerated, {TimeRange:grain}), DataType  ",
         "size": 0,
         "title": "Ingestion Over Time",
         "timeContextFromParameter": "TimeRange",
@@ -188,7 +188,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let TotalIngestion=toscalar(\r\nUsage\r\n| where DataType == tolower(DataType)\r\n| where TimeGenerated {TimeRange:query}\r\n| summarize IngestionVolume=sum(Quantity));\r\nUsage\r\n| where DataType == tolower(DataType)\r\n| where TimeGenerated {TimeRange:query}\r\n| project DataType, Solution, Quantity, IsBillable\r\n| summarize IngestionVolume=sum(Quantity), IngestionPercent=(sum(Quantity))/TotalIngestion by DataType\r\n//| sort by DataType asc\r\n| sort by IngestionVolume desc",
+        "query": "let TotalIngestion=toscalar(\r\nUsage\r\n| where MeterId == \"00000000-0000-0000-0000-000000000000\"\r\n| where TimeGenerated {TimeRange:query}\r\n| summarize IngestionVolume=sum(Quantity));\r\nUsage\r\n| where MeterId == \"00000000-0000-0000-0000-000000000000\"\r\n| where TimeGenerated {TimeRange:query}\r\n| project DataType, Solution, Quantity, IsBillable\r\n| summarize IngestionVolume=sum(Quantity), IngestionPercent=(sum(Quantity))/TotalIngestion by DataType\r\n//| sort by DataType asc\r\n| sort by IngestionVolume desc",
         "size": 0,
         "noDataMessage": "Select a table from the above list",
         "timeContextFromParameter": "TimeRange",
@@ -440,7 +440,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "Usage\r\n| where DataType == tolower(DataType)\r\n| where TimeGenerated {TimeRange:query}\r\n| summarize last_log = datetime_diff(\"second\",now(), max(TimeGenerated)) by DataType\r\n//| where last_log > 6\r\n| project ['Table Name'] = DataType,  ['Last Record Received'] =  last_log \r\n | order by ['Last Record Received']  desc\r\n\r\n ",
+        "query": "Usage\r\n| where MeterId == \"00000000-0000-0000-0000-000000000000\"\r\n| where TimeGenerated {TimeRange:query}\r\n| summarize last_log = datetime_diff(\"second\",now(), max(TimeGenerated)) by DataType\r\n//| where last_log > 6\r\n| project ['Table Name'] = DataType,  ['Last Record Received'] =  last_log \r\n | order by ['Last Record Received']  desc\r\n\r\n ",
         "size": 0,
         "showAnalytics": true,
         "title": "Last data in Usage, by table",
