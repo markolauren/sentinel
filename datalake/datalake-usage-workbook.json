@@ -79,7 +79,7 @@
             "timeContextFromParameter": "TimeRange",
             "queryType": 1,
             "resourceType": "microsoft.resourcegraph/resources",
-            "value": "/subscriptions/6858c465-1182-4bf4-81ae-78abd312aa93/resourceGroups/vet-unifiedsecops-rg/providers/Microsoft.OperationalInsights/workspaces/vet-unifiedsecops"
+            "value": null
           },
           {
             "id": "653abca7-aa76-4bb1-bb1c-e023036b59d2",
