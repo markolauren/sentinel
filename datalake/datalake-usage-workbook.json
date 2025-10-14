@@ -1,0 +1,603 @@
+{
+  "version": "Notebook/1.0",
+  "items": [
+    {
+      "type": 9,
+      "content": {
+        "version": "KqlParameterItem/1.0",
+        "parameters": [
+          {
+            "id": "0759d4c3-91f8-4418-9a99-ee115bfd2d13",
+            "version": "KqlParameterItem/1.0",
+            "name": "TimeRange",
+            "label": "Time Range",
+            "type": 4,
+            "typeSettings": {
+              "selectableValues": [
+                {
+                  "durationMs": 3600000
+                },
+                {
+                  "durationMs": 14400000
+                },
+                {
+                  "durationMs": 43200000
+                },
+                {
+                  "durationMs": 86400000
+                },
+                {
+                  "durationMs": 172800000
+                },
+                {
+                  "durationMs": 259200000
+                },
+                {
+                  "durationMs": 604800000
+                },
+                {
+                  "durationMs": 1209600000
+                },
+                {
+                  "durationMs": 2419200000
+                },
+                {
+                  "durationMs": 2592000000
+                },
+                {
+                  "durationMs": 5184000000
+                },
+                {
+                  "durationMs": 7776000000
+                }
+              ],
+              "allowCustom": true
+            },
+            "timeContext": {
+              "durationMs": 86400000
+            },
+            "value": {
+              "durationMs": 2592000000
+            }
+          },
+          {
+            "id": "7b7ecd7d-77c3-476e-997d-7cb1f7d92ad6",
+            "version": "KqlParameterItem/1.0",
+            "name": "Workspace",
+            "type": 5,
+            "query": "resources\r\n| where type == \"microsoft.operationalinsights/workspaces\"\r\n| distinct id\r\n",
+            "crossComponentResources": [
+              "value::all"
+            ],
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "timeContext": {
+              "durationMs": 0
+            },
+            "timeContextFromParameter": "TimeRange",
+            "queryType": 1,
+            "resourceType": "microsoft.resourcegraph/resources",
+            "value": null
+          },
+          {
+            "id": "653abca7-aa76-4bb1-bb1c-e023036b59d2",
+            "version": "KqlParameterItem/1.0",
+            "name": "Type",
+            "type": 10,
+            "isRequired": true,
+            "isHiddenWhenLocked": true,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "jsonData": "[\"Data lake\", \"All\"]",
+            "timeContext": {
+              "durationMs": 2592000000
+            },
+            "timeContextFromParameter": "TimeRange",
+            "value": "Data lake"
+          }
+        ],
+        "style": "pills",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces"
+      },
+      "name": "Usage time range"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Usage\r\n| where DataType == tolower(DataType)\r\n| summarize IngestedGB=sum(Quantity)/1024\r\n| project RoundedIngestedGB=case(IngestedGB < 1, tostring(round(IngestedGB, 2)),\r\n                                 IngestedGB < 10, tostring(round(IngestedGB, 1)),\r\n                                 tostring(toint(round(IngestedGB, 0))))\r\n| project strcat(RoundedIngestedGB, \" GB\")",
+        "size": 3,
+        "title": "Total Ingestion Volume",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspace}"
+        ],
+        "visualization": "card",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "TotalMB",
+              "formatter": 11,
+              "numberFormat": {
+                "unit": 38,
+                "options": {
+                  "style": "decimal",
+                  "maximumFractionDigits": 0
+                }
+              }
+            }
+          ]
+        },
+        "tileSettings": {
+          "showBorder": false
+        },
+        "textSettings": {
+          "style": "bignumber"
+        }
+      },
+      "customWidth": "20",
+      "name": "IngestionVolumeTotal",
+      "styleSettings": {
+        "padding": "10px",
+        "maxWidth": "20"
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Usage\r\n| where DataType == tolower(DataType)\r\n| project TimeGenerated, DataType, Quantity\r\n| summarize IngestionVolumeMB=sum(Quantity) by bin(TimeGenerated, {TimeRange:grain}), DataType  ",
+        "size": 0,
+        "title": "Ingestion Over Time",
+        "timeContextFromParameter": "TimeRange",
+        "showRefreshButton": true,
+        "showExportToExcel": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspace}"
+        ],
+        "visualization": "areachart",
+        "chartSettings": {
+          "ySettings": {
+            "numberFormatSettings": {
+              "unit": 38,
+              "options": {
+                "style": "decimal",
+                "useGrouping": true
+              }
+            }
+          }
+        }
+      },
+      "name": "Ingestion TimeChart of Top Data Types",
+      "styleSettings": {
+        "margin": "10px",
+        "padding": "10px",
+        "showBorder": true
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "let TotalIngestion=toscalar(\r\nUsage\r\n| where DataType == tolower(DataType)\r\n| where TimeGenerated {TimeRange:query}\r\n| summarize IngestionVolume=sum(Quantity));\r\nUsage\r\n| where DataType == tolower(DataType)\r\n| where TimeGenerated {TimeRange:query}\r\n| project DataType, Solution, Quantity, IsBillable\r\n| summarize IngestionVolume=sum(Quantity), IngestionPercent=(sum(Quantity))/TotalIngestion by DataType\r\n//| sort by DataType asc\r\n| sort by IngestionVolume desc",
+        "size": 0,
+        "noDataMessage": "Select a table from the above list",
+        "timeContextFromParameter": "TimeRange",
+        "exportFieldName": "DataType",
+        "exportParameterName": "TableInFocus",
+        "exportDefaultValue": "",
+        "showExportToExcel": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspace}"
+        ],
+        "visualization": "table",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "DataType",
+              "formatter": 0,
+              "formatOptions": {
+                "customColumnWidthSetting": "40ch"
+              }
+            },
+            {
+              "columnMatch": "Volume",
+              "formatter": 4,
+              "formatOptions": {
+                "palette": "green",
+                "customColumnWidthSetting": "25ch"
+              },
+              "numberFormat": {
+                "unit": 38,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 2
+                }
+              }
+            },
+            {
+              "columnMatch": "IngestionPercent",
+              "formatter": 4,
+              "formatOptions": {
+                "palette": "turquoise",
+                "customColumnWidthSetting": "25ch"
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "percent",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 1
+                }
+              }
+            },
+            {
+              "columnMatch": "Billable",
+              "formatter": 18,
+              "formatOptions": {
+                "thresholdsOptions": "icons",
+                "thresholdsGrid": [
+                  {
+                    "operator": "==",
+                    "thresholdValue": "true",
+                    "representation": "Blank",
+                    "text": "Billable"
+                  },
+                  {
+                    "operator": "==",
+                    "thresholdValue": "false",
+                    "representation": "Blank",
+                    "text": "Not billable"
+                  },
+                  {
+                    "operator": "Default",
+                    "thresholdValue": null,
+                    "representation": "Blank",
+                    "text": "{0}{1}"
+                  }
+                ],
+                "compositeBarSettings": {
+                  "labelText": "",
+                  "columnSettings": []
+                }
+              }
+            },
+            {
+              "columnMatch": "TimeSinceLastUpdate",
+              "formatter": 18,
+              "formatOptions": {
+                "thresholdsOptions": "icons",
+                "thresholdsGrid": [
+                  {
+                    "operator": "<=",
+                    "thresholdValue": "5400",
+                    "representation": "Blank",
+                    "text": "{0}{1}"
+                  },
+                  {
+                    "operator": "<=",
+                    "thresholdValue": "10800",
+                    "representation": "Blank",
+                    "text": "{0}{1}"
+                  },
+                  {
+                    "operator": ">",
+                    "thresholdValue": "10800",
+                    "representation": "Normal",
+                    "text": "{0}{1}"
+                  },
+                  {
+                    "operator": "Default",
+                    "thresholdValue": null,
+                    "representation": "Blank",
+                    "text": "{0}{1}"
+                  }
+                ]
+              },
+              "numberFormat": {
+                "unit": 24,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumFractionDigits": 0
+                }
+              }
+            }
+          ],
+          "rowLimit": 500,
+          "sortBy": [
+            {
+              "itemKey": "$gen_bar_Volume_1",
+              "sortOrder": 2
+            }
+          ],
+          "labelSettings": [
+            {
+              "columnId": "DataType",
+              "label": "Table"
+            },
+            {
+              "columnId": "IngestionVolume",
+              "label": "Ingestion Volume"
+            },
+            {
+              "columnId": "IngestionPercent",
+              "label": "Ingestion Percentage"
+            }
+          ]
+        },
+        "sortBy": [
+          {
+            "itemKey": "$gen_bar_Volume_1",
+            "sortOrder": 2
+          }
+        ],
+        "tileSettings": {
+          "titleContent": {
+            "columnMatch": "DataType",
+            "formatter": 1
+          },
+          "subtitleContent": {
+            "columnMatch": "Solution"
+          },
+          "leftContent": {
+            "columnMatch": "IngestionVolume",
+            "formatter": 12,
+            "formatOptions": {
+              "palette": "magenta"
+            },
+            "numberFormat": {
+              "unit": 17,
+              "options": {
+                "style": "decimal",
+                "maximumFractionDigits": 2,
+                "maximumSignificantDigits": 3
+              }
+            }
+          },
+          "showBorder": false
+        },
+        "graphSettings": {
+          "type": 0,
+          "topContent": {
+            "columnMatch": "Solution",
+            "formatter": 1
+          },
+          "centerContent": {
+            "columnMatch": "IngestionVolume",
+            "formatter": 1,
+            "numberFormat": {
+              "unit": 17,
+              "options": {
+                "maximumSignificantDigits": 3,
+                "maximumFractionDigits": 2
+              }
+            }
+          }
+        },
+        "mapSettings": {
+          "locInfo": "LatLong",
+          "sizeSettings": "IngestionVolume",
+          "sizeAggregation": "Sum",
+          "legendMetric": "IngestionVolume",
+          "legendAggregation": "Sum",
+          "itemColorSettings": {
+            "type": "heatmap",
+            "colorAggregation": "Sum",
+            "nodeColorField": "IngestionVolume",
+            "heatmapPalette": "greenRed"
+          }
+        }
+      },
+      "customWidth": "50",
+      "name": "BillableTablesVolume"
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Usage\r\n| where DataType == '{TableInFocus}'\r\n| where TimeGenerated {TimeRange:query}\r\n| summarize IngestionMB =sum(Quantity) by bin(TimeGenerated, {TimeRange:grain})\r\n\r\n",
+        "size": 0,
+        "showAnalytics": true,
+        "title": "{TableInFocus}: Ingestion Volume",
+        "color": "greenDark",
+        "timeContextFromParameter": "TimeRange",
+        "showExportToExcel": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "visualization": "areachart",
+        "chartSettings": {
+          "ySettings": {
+            "numberFormatSettings": {
+              "unit": 4,
+              "options": {
+                "style": "decimal",
+                "useGrouping": true
+              }
+            }
+          }
+        }
+      },
+      "customWidth": "50",
+      "name": "Ingestion volume",
+      "styleSettings": {
+        "maxWidth": "50"
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Usage\r\n| where DataType == tolower(DataType)\r\n| where TimeGenerated {TimeRange:query}\r\n| summarize last_log = datetime_diff(\"second\",now(), max(TimeGenerated)) by DataType\r\n//| where last_log > 6\r\n| project ['Table Name'] = DataType,  ['Last Record Received'] =  last_log \r\n | order by ['Last Record Received']  desc\r\n\r\n ",
+        "size": 0,
+        "showAnalytics": true,
+        "title": "Last data in Usage, by table",
+        "timeContextFromParameter": "TimeRange",
+        "exportFieldName": "Table Name",
+        "exportParameterName": "Table",
+        "exportDefaultValue": "All Tables",
+        "showExportToExcel": true,
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspace}"
+        ],
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "Last Record Received",
+              "formatter": 8,
+              "formatOptions": {
+                "palette": "orangeRed"
+              },
+              "numberFormat": {
+                "unit": 24,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false,
+                  "maximumSignificantDigits": 2
+                }
+              }
+            },
+            {
+              "columnMatch": "Table Size",
+              "formatter": 3,
+              "formatOptions": {
+                "min": 0,
+                "palette": "coldHot"
+              },
+              "numberFormat": {
+                "unit": 2,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false
+                }
+              }
+            },
+            {
+              "columnMatch": "Table Entries",
+              "formatter": 3,
+              "formatOptions": {
+                "min": 0,
+                "palette": "green"
+              },
+              "numberFormat": {
+                "unit": 17,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false
+                }
+              }
+            },
+            {
+              "columnMatch": "Size per Entry",
+              "formatter": 3,
+              "formatOptions": {
+                "min": 0,
+                "palette": "orange"
+              },
+              "numberFormat": {
+                "unit": 2,
+                "options": {
+                  "style": "decimal",
+                  "maximumFractionDigits": 2
+                }
+              }
+            },
+            {
+              "columnMatch": "IsBillable",
+              "formatter": 18,
+              "formatOptions": {
+                "thresholdsOptions": "colors",
+                "thresholdsGrid": [
+                  {
+                    "operator": "==",
+                    "thresholdValue": "True",
+                    "representation": "green",
+                    "text": "{0}{1}"
+                  },
+                  {
+                    "operator": "==",
+                    "thresholdValue": "False",
+                    "representation": "blueDark",
+                    "text": "{0}{1}"
+                  },
+                  {
+                    "operator": "Default",
+                    "representation": "blue",
+                    "text": "{0}{1}"
+                  }
+                ]
+              }
+            },
+            {
+              "columnMatch": "Estimated Table Price",
+              "formatter": 3,
+              "formatOptions": {
+                "palette": "greenRed"
+              },
+              "numberFormat": {
+                "unit": 0,
+                "options": {
+                  "style": "decimal",
+                  "useGrouping": false
+                }
+              }
+            },
+            {
+              "columnMatch": "Table Trend",
+              "formatter": 10,
+              "formatOptions": {
+                "palette": "redGreen"
+              }
+            }
+          ],
+          "filter": true,
+          "sortBy": [
+            {
+              "itemKey": "$gen_heatmap_Last Record Received_1",
+              "sortOrder": 2
+            }
+          ],
+          "labelSettings": [
+            {
+              "columnId": "Table Name",
+              "label": "Table name"
+            },
+            {
+              "columnId": "Last Record Received",
+              "label": "Last record received",
+              "comment": "When did the last record arrive?"
+            }
+          ]
+        },
+        "sortBy": [
+          {
+            "itemKey": "$gen_heatmap_Last Record Received_1",
+            "sortOrder": 2
+          }
+        ]
+      },
+      "customWidth": "50",
+      "showPin": true,
+      "name": "query - 2 - Copy"
+    }
+  ],
+  "fallbackResourceIds": [
+    "/subscriptions/6858c465-1182-4bf4-81ae-78abd312aa93/resourcegroups/vet-unifiedsecops-rg/providers/microsoft.operationalinsights/workspaces/vet-unifiedsecops"
+  ],
+  "fromTemplateId": "sentinel-UserWorkbook",
+  "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
+}
