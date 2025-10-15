@@ -595,9 +595,6 @@
       "name": "query - 2 - Copy"
     }
   ],
-  "fallbackResourceIds": [
-    "/subscriptions/6858c465-1182-4bf4-81ae-78abd312aa93/resourcegroups/vet-unifiedsecops-rg/providers/microsoft.operationalinsights/workspaces/vet-unifiedsecops"
-  ],
   "fromTemplateId": "sentinel-UserWorkbook",
   "$schema": "https://github.com/Microsoft/Application-Insights-Workbooks/blob/master/schema/workbook.json"
 }
