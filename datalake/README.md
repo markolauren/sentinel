@@ -1,6 +1,6 @@
-## Data lake usage workbook
+## Data lake ingestion workbook
 
 Relies 100% on Usage table to fetch ingested data amounts.
 <br/><br/>
-<img width="1570" height="906" alt="image" src="https://github.com/user-attachments/assets/018294cf-2fa6-493a-82ed-2ed5447f1248" />
+<img width="1573" height="927" alt="image" src="https://github.com/user-attachments/assets/7c6522ba-1b15-4547-8254-964763dbcf77" />
 
