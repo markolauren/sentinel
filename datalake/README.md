@@ -2,5 +2,5 @@
 
 Relies 100% on Usage table to fetch ingested data amounts.
 <br/><br/>
-<img width="1577" height="928" alt="image" src="https://github.com/user-attachments/assets/c8d76944-7900-4a46-a94b-5987f8ccbf72" />
+<img width="1570" height="906" alt="image" src="https://github.com/user-attachments/assets/018294cf-2fa6-493a-82ed-2ed5447f1248" />
 
