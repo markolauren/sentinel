@@ -1,1 +1,1 @@
-Sentinel cost calculator (unofficial)
+## Sentinel cost calculator (unofficial)
