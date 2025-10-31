@@ -1,8 +1,5 @@
 ## Sentinel cost calculator (unofficial)
 
-[Calculator](https://github.com/markolauren/sentinel/blob/main/costCalculator/Sentinel_cost_calculator.xlsx) (right-click and choose "save as")
-<br/><br/>
-
 <img width="1525" height="765" alt="image" src="https://github.com/user-attachments/assets/48332ec1-f924-4f86-8930-383b196d4e1e" />
 <br/><br/>
 
