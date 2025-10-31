@@ -13,6 +13,13 @@
 6)	Fill in estimated summary rules for data lake sources. x % indicates how much the summary rule produces outcome, which is written to analytics table.
 <br/><br/>
 
+**Outcome**
+
+<img width="464" height="281" alt="image" src="https://github.com/user-attachments/assets/c06d3b16-00e6-4745-b193-1e20fa2ecdf6" />
+<img width="1505" height="946" alt="image" src="https://github.com/user-attachments/assets/0216d1e1-ad2f-4ae3-8a8c-a4cddcc1bebb" />
+<img width="1500" height="947" alt="image" src="https://github.com/user-attachments/assets/9a17daae-5627-4877-bc96-16fc5b9c1a86" />
+<br/><br/>
+
 **FAQ**
 
 How much am I entitled to ingest free using M365 E5 benefit?
