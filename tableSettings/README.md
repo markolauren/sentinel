@@ -78,7 +78,7 @@ If you pass multiple tokens or a comma-separated list, entries are treated as ex
   /subscriptions/<SUBSCRIPTION_ID>/resourceGroups/<RESOURCE_GROUP>/providers/Microsoft.OperationalInsights/workspaces/<WORKSPACE_NAME>
   ```
 - `-Table` : One or more table names to update (supports shortcuts when exactly one token is supplied).
-- `-Plan` : Plan to set — `Analytics`, `Basic`, `Auxiliary`, or `Datalake` (mapping applied).
+- `-Plan` : Plan to set — `Analytics`, `Basic`, `Auxiliary`, or `Datalake`.
 - `-TotalRetention` (optional) : Total retention in days. Default `0` = not specified / not changed.
 
 ---
