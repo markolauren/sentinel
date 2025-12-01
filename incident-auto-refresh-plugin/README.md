@@ -2,6 +2,9 @@
 
 A Chrome/Edge browser extension that automatically refreshes the Microsoft Security incidents page at configurable intervals by clicking the page's refresh button.
 
+<img width="321" height="444" alt="image" src="https://github.com/user-attachments/assets/5e327892-514f-4eee-907a-58e54e2d7103" />
+
+
 ## Features
 
 - ✅ Automatically clicks the "Refresh" button on Microsoft Security incidents pages
