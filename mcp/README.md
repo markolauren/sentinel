@@ -2,9 +2,10 @@
 
 ## How to Choose the Right MCP
 
-### Intent Recognition
+<img width="627" height="798" alt="1-decisiontree" src="https://github.com/user-attachments/assets/e382a2e4-77e1-4b3e-b77d-281727ae4151" />
 
-<img width="999" height="783" alt="1-decisiontree" src="https://github.com/user-attachments/assets/94f060cc-77a2-4293-826c-f91c6a1a658e" />
+
+### Intent Recognition
 
 Analyze the request for:
 - **Data type** (users, sign-ins, incidents, alerts, devices)
