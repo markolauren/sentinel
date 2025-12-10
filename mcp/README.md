@@ -78,10 +78,10 @@ Analyze the request for:
 
 ### Sequential vs Parallel Execution
 
+<img width="630" height="535" alt="4-parallelorchestration" src="https://github.com/user-attachments/assets/d3f4f25c-9e58-4a4b-b43f-edd29943852b" />
+
 **Complex Question Example:**
 *"Show me high-severity incidents from the last 24h involving admin users and their activity"*
-
-<img width="630" height="535" alt="4-parallelorchestration" src="https://github.com/user-attachments/assets/d3f4f25c-9e58-4a4b-b43f-edd29943852b" />
 
 ### Orchestration Phases
 
