@@ -21,7 +21,7 @@ These connectors use the **Office 365 Management Activity API** to retrieve Micr
 
 1. **Deploy the solution** - Click the button below to deploy both connectors and infrastructure to your Sentinel workspace:
 
-   [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmarkolaurent%2FM365AuditGeneralCCP%2Fmain%2FM365AuditGeneralConnectorCCP.json)
+   [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmarkolauren%2Fsentinel%2Frefs%2Fheads%2Fmain%2FM365AuditGeneralAndDLPSolution%2FM365AuditGeneralAndDLPSolution.json)
 
 2. **Open the connector pages** - After deployment completes, navigate to Sentinel → Data connectors and search for:
    - "Microsoft 365 Audit.General" 
@@ -83,7 +83,38 @@ The Office 365 Management Activity API organizes audit data into different conte
 
 ## Polling Behavior
 
-**Polling Interval:** The connector polls the Office 365 Management API every **5 minutes** (hardcoded in the connector definition).
+**Polling Interval:** The connector polls the Office 365 Management API every **5 minutes** by default.
+
+### Changing the Polling Interval
+
+To modify the polling interval (e.g., to 15 minutes), edit the `M365AuditGeneralAndDLPSolution.json` template **before deployment**:
+
+1. Open the template file in a text editor
+2. Search for `"queryWindowInMin": 5` (appears twice - once for each connector)
+3. Change the value from `5` to your desired interval in minutes (e.g., `15`)
+4. Save the file and deploy using the modified template
+
+**Example:**
+```json
+"request": {
+    "apiEndpoint": "...",
+    "httpMethod": "GET",
+    "rateLimitQPS": 10,
+    "queryWindowInMin": 15,
+    "queryTimeFormat": "yyyy-MM-ddTHH:mm:ss",
+    ...
+}
+```
+
+**Note:** Microsoft recommends polling intervals between 5-60 minutes. Shorter intervals provide more real-time data but consume more API quota; longer intervals reduce API calls but delay data ingestion.
+
+### API Rate Limiting
+
+The connector uses `"rateLimitQPS": 10` to control the maximum number of API requests per second when fetching audit data. 
+
+**When it matters:** During each polling cycle, if there are multiple content blobs to fetch, this setting prevents overwhelming the API. The Office 365 Management API limits are **2,000 requests per minute per app** (≈33 req/sec), so the default of 10 req/sec is conservative and safe.
+
+**To change:** Edit the same locations as `queryWindowInMin`, Increase to 20-30 for faster data ingestion if you have high log volume; decrease to 5 if experiencing throttling errors.
 
 ## Data Schema
 
@@ -348,7 +379,7 @@ Invoke-RestMethod -Method Post -Uri $subscribeUri -Headers $headers
 
 1. Click the **Deploy to Azure** button below:
 
-   [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fyour-repo%2FM365AuditGeneralConnectorCCP.json)
+   [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fmarkolauren%2Fsentinel%2Frefs%2Fheads%2Fmain%2FM365AuditGeneralAndDLPSolution%2FM365AuditGeneralAndDLPSolution.json)
 
 2. Fill in the required parameters:
    - **Workspace**: Your Sentinel workspace name
