@@ -10,7 +10,7 @@ This solution provides **two codeless connectors (CCF)** for ingesting Microsoft
 
 These connectors use the **Office 365 Management Activity API** to retrieve Microsoft 365 audit logs into a shared **304-column schema** covering **30 specialty workload types**:
 
-- **Audit.General connector**: 29 specialty workloads (Copilot, Power BI, Viva suite, Security & Compliance, eDiscovery, Sentinel platoform, etc.)
+- **Audit.General connector**: 29 specialty workloads (Copilot, Power BI, Viva suite, Security & Compliance, eDiscovery, Sentinel platform, etc.)
 - **Audit.DLP connector**: Data loss prevention (DLP) events in Microsoft Purview available for Exchange Online, Endpoint(devices), and SharePoint and OneDrive.
 
 **Schema Design:** This connector follows the official [Office 365 Management Activity API Schema](https://learn.microsoft.com/en-us/office/office-365-management-api/office-365-management-activity-api-schema) as documented by Microsoft. All field names, types, and structures are mapped directly from the API schema to ensure compatibility and accuracy.
