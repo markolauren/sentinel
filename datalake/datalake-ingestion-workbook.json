@@ -87,17 +87,34 @@
             "name": "Type",
             "type": 10,
             "isRequired": true,
-            "isHiddenWhenLocked": true,
             "typeSettings": {
               "additionalResourceOptions": [],
               "showDefault": false
             },
-            "jsonData": "[\"Data lake\", \"All\"]",
+            "jsonData": "[\"Data lake\", \"Analytics\", \"All\"]",
             "timeContext": {
               "durationMs": 2592000000
             },
             "timeContextFromParameter": "TimeRange",
-            "value": "Data lake"
+            "value": "All"
+          },
+          {
+            "version": "KqlParameterItem/1.0",
+            "name": "BillableOnly",
+            "label": "Show only billable tables",
+            "type": 10,
+            "isRequired": true,
+            "typeSettings": {
+              "additionalResourceOptions": [],
+              "showDefault": false
+            },
+            "jsonData": "[\"Yes\", \"No\"]",
+            "timeContext": {
+              "durationMs": 2592000000
+            },
+            "timeContextFromParameter": "TimeRange",
+            "value": "No",
+            "id": "ec609fcd-05a7-45f2-96e7-4ee5ac9e0cd8"
           }
         ],
         "style": "pills",
@@ -110,7 +127,93 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "Usage\r\n| where MeterId == \"00000000-0000-0000-0000-000000000000\"\r\n| summarize IngestedGB=sum(Quantity)/1024\r\n| project RoundedIngestedGB=case(IngestedGB < 1, tostring(round(IngestedGB, 2)),\r\n                                 IngestedGB < 10, tostring(round(IngestedGB, 1)),\r\n                                 tostring(toint(round(IngestedGB, 0))))\r\n| project strcat(RoundedIngestedGB, \" GB\")",
+        "query": "Usage\r\n| where MeterId == \"00000000-0000-0000-0000-000000000000\"\r\n| where IsBillable == iff('{BillableOnly}' == \"Yes\", true, IsBillable)\r\n| summarize IngestedGB=sum(Quantity)/1024\r\n| project RoundedIngestedGB=case(IngestedGB < 1, tostring(round(IngestedGB, 2)),\r\n                                 IngestedGB < 10, tostring(round(IngestedGB, 1)),\r\n                                 tostring(toint(round(IngestedGB, 0))))\r\n| project strcat(RoundedIngestedGB, \" GB\")",
+        "size": 3,
+        "title": "Data lake Ingestion Volume",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspace}"
+        ],
+        "visualization": "card",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "TotalMB",
+              "formatter": 11,
+              "numberFormat": {
+                "unit": 38,
+                "options": {
+                  "style": "decimal",
+                  "maximumFractionDigits": 0
+                }
+              }
+            }
+          ]
+        },
+        "tileSettings": {
+          "showBorder": false
+        },
+        "textSettings": {
+          "style": "bignumber"
+        }
+      },
+      "customWidth": "20",
+      "name": "Data lake Ingestion Volume",
+      "styleSettings": {
+        "padding": "10px",
+        "maxWidth": "20"
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Usage\r\n| where MeterId != \"00000000-0000-0000-0000-000000000000\"\r\n| where IsBillable == iff('{BillableOnly}' == \"Yes\", true, IsBillable)\r\n| summarize IngestedGB=sum(Quantity)/1024\r\n| project RoundedIngestedGB=case(IngestedGB < 1, tostring(round(IngestedGB, 2)),\r\n                                 IngestedGB < 10, tostring(round(IngestedGB, 1)),\r\n                                 tostring(toint(round(IngestedGB, 0))))\r\n| project strcat(RoundedIngestedGB, \" GB\")",
+        "size": 3,
+        "title": "Analytics Ingestion Volume",
+        "timeContextFromParameter": "TimeRange",
+        "queryType": 0,
+        "resourceType": "microsoft.operationalinsights/workspaces",
+        "crossComponentResources": [
+          "{Workspace}"
+        ],
+        "visualization": "card",
+        "gridSettings": {
+          "formatters": [
+            {
+              "columnMatch": "TotalMB",
+              "formatter": 11,
+              "numberFormat": {
+                "unit": 38,
+                "options": {
+                  "style": "decimal",
+                  "maximumFractionDigits": 0
+                }
+              }
+            }
+          ]
+        },
+        "tileSettings": {
+          "showBorder": false
+        },
+        "textSettings": {
+          "style": "bignumber"
+        }
+      },
+      "customWidth": "20",
+      "name": "Analytics Ingestion Volume",
+      "styleSettings": {
+        "padding": "10px",
+        "maxWidth": "20"
+      }
+    },
+    {
+      "type": 3,
+      "content": {
+        "version": "KqlItem/1.0",
+        "query": "Usage\r\n| where IsBillable == iff('{BillableOnly}' == \"Yes\", true, IsBillable)\r\n| summarize IngestedGB=sum(Quantity)/1024\r\n| project RoundedIngestedGB=case(IngestedGB < 1, tostring(round(IngestedGB, 2)),\r\n                                 IngestedGB < 10, tostring(round(IngestedGB, 1)),\r\n                                 tostring(toint(round(IngestedGB, 0))))\r\n| project strcat(RoundedIngestedGB, \" GB\")",
         "size": 3,
         "title": "Total Ingestion Volume",
         "timeContextFromParameter": "TimeRange",
@@ -153,7 +256,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "Usage\r\n| where MeterId == \"00000000-0000-0000-0000-000000000000\"\r\n| project TimeGenerated, DataType, Quantity\r\n| summarize IngestionVolumeMB=sum(Quantity) by bin(TimeGenerated, {TimeRange:grain}), DataType  ",
+        "query": "let SelectedType = '{Type}';\r\nUsage\r\n| extend \r\n    IsMatching = \r\n        case(\r\n            SelectedType == \"Data lake\",  MeterId == \"00000000-0000-0000-0000-000000000000\",\r\n            SelectedType == \"Analytics\",  MeterId != \"00000000-0000-0000-0000-000000000000\",\r\n            SelectedType == \"All\" or isempty(SelectedType) or isnull(SelectedType), true,\r\n            true\r\n        )\r\n| where IsMatching == true\r\n| project TimeGenerated, DataType, Quantity, IsBillable\r\n| summarize IngestionVolumeMB=sum(Quantity) by bin(TimeGenerated, {TimeRange:grain}), DataType, IsBillable\r\n| where IsBillable == iff('{BillableOnly}' == \"Yes\", true, IsBillable)\r\n",
         "size": 0,
         "title": "Ingestion Over Time",
         "timeContextFromParameter": "TimeRange",
@@ -188,7 +291,7 @@
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "let TotalIngestion=toscalar(\r\nUsage\r\n| where MeterId == \"00000000-0000-0000-0000-000000000000\"\r\n| where TimeGenerated {TimeRange:query}\r\n| summarize IngestionVolume=sum(Quantity));\r\nUsage\r\n| where MeterId == \"00000000-0000-0000-0000-000000000000\"\r\n| where TimeGenerated {TimeRange:query}\r\n| project DataType, Solution, Quantity, IsBillable\r\n| summarize IngestionVolume=sum(Quantity), IngestionPercent=(sum(Quantity))/TotalIngestion by DataType\r\n//| sort by DataType asc\r\n| sort by IngestionVolume desc",
+        "query": "let SelectedType = '{Type}';\r\nlet TotalIngestion = toscalar(\r\n    Usage\r\n    | where TimeGenerated {TimeRange:query}\r\n    | extend \r\n        IsMatching = \r\n            case(\r\n                SelectedType == \"Data lake\",  MeterId == \"00000000-0000-0000-0000-000000000000\",\r\n                SelectedType == \"Analytics\",  MeterId != \"00000000-0000-0000-0000-000000000000\",\r\n                SelectedType == \"All\" or isempty(SelectedType) or isnull(SelectedType), true,\r\n                true\r\n            )\r\n    | where IsMatching == true\r\n    | summarize IngestionVolume=sum(Quantity)\r\n);\r\nUsage\r\n| where TimeGenerated {TimeRange:query}\r\n| extend \r\n    IsMatching = \r\n        case(\r\n            SelectedType == \"Data lake\",  MeterId == \"00000000-0000-0000-0000-000000000000\",\r\n            SelectedType == \"Analytics\",  MeterId != \"00000000-0000-0000-0000-000000000000\",\r\n            SelectedType == \"All\" or isempty(SelectedType) or isnull(SelectedType), true,\r\n            true\r\n        )\r\n| where IsMatching == true\r\n| extend Plan = iff(MeterId == \"00000000-0000-0000-0000-000000000000\", \"Data lake\", \"Analytics\")\r\n| project DataType, Solution, Quantity, IsBillable, Plan\r\n| summarize IngestionVolume=sum(Quantity), IngestionPercent=(sum(Quantity))/TotalIngestion by DataType, Plan, IsBillable\r\n| where IsBillable == iff('{BillableOnly}' == \"Yes\", true, IsBillable)\r\n| project DataType, IngestionVolume, IngestionPercent, Plan, IsBillable\r\n| sort by IngestionVolume desc",
         "size": 0,
         "noDataMessage": "Select a table from the above list",
         "timeContextFromParameter": "TimeRange",
@@ -204,13 +307,6 @@
         "visualization": "table",
         "gridSettings": {
           "formatters": [
-            {
-              "columnMatch": "DataType",
-              "formatter": 0,
-              "formatOptions": {
-                "customColumnWidthSetting": "40ch"
-              }
-            },
             {
               "columnMatch": "Volume",
               "formatter": 4,
@@ -317,12 +413,6 @@
             }
           ],
           "rowLimit": 500,
-          "sortBy": [
-            {
-              "itemKey": "$gen_bar_Volume_1",
-              "sortOrder": 2
-            }
-          ],
           "labelSettings": [
             {
               "columnId": "DataType",
@@ -338,12 +428,7 @@
             }
           ]
         },
-        "sortBy": [
-          {
-            "itemKey": "$gen_bar_Volume_1",
-            "sortOrder": 2
-          }
-        ],
+        "sortBy": [],
         "tileSettings": {
           "titleContent": {
             "columnMatch": "DataType",
@@ -431,16 +516,13 @@
         }
       },
       "customWidth": "50",
-      "name": "Ingestion volume",
-      "styleSettings": {
-        "maxWidth": "50"
-      }
+      "name": "Ingestion volume"
     },
     {
       "type": 3,
       "content": {
         "version": "KqlItem/1.0",
-        "query": "Usage\r\n| where MeterId == \"00000000-0000-0000-0000-000000000000\"\r\n| where TimeGenerated {TimeRange:query}\r\n| summarize last_log = datetime_diff(\"second\",now(), max(TimeGenerated)) by DataType\r\n//| where last_log > 6\r\n| project ['Table Name'] = DataType,  ['Last Record Received'] =  last_log \r\n | order by ['Last Record Received']  desc\r\n\r\n ",
+        "query": "let SelectedType = '{Type}';\r\nUsage\r\n| where TimeGenerated {TimeRange:query}\r\n| extend \r\n    IsMatching = \r\n        case(\r\n            SelectedType == \"Data lake\",  MeterId == \"00000000-0000-0000-0000-000000000000\",\r\n            SelectedType == \"Analytics\",  MeterId != \"00000000-0000-0000-0000-000000000000\",\r\n            SelectedType == \"All\" or isempty(SelectedType) or isnull(SelectedType), true,\r\n            true\r\n        )\r\n| where IsMatching == true\r\n| summarize last_log = datetime_diff(\"second\",now(), max(TimeGenerated)) by DataType, IsBillable\r\n//| where last_log > 6\r\n| where IsBillable == iff('{BillableOnly}' == \"Yes\", true, IsBillable)\r\n| project ['Table Name'] = DataType,  ['Last Record Received'] =  last_log \r\n | order by ['Last Record Received']  desc\r\n\r\n ",
         "size": 0,
         "showAnalytics": true,
         "title": "Last data in Usage, by table",
