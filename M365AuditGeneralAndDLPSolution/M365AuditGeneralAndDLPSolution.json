@@ -3126,7 +3126,7 @@
                     "id": "M365AuditGeneralCCP",
                     "title": "Microsoft 365 Audit.General",
                     "publisher": "Marko Lauren",
-                    "descriptionMarkdown": "Microsoft 365 Audit.General connector ingests generic audit logs from Microsoft 365 workloads **not covered by dedicated connectors** (such as Exchange, Sharepoint, Teams, Dynamics, Purview). Includes Copilot, Power BI, Viva suite, Defender for Office 365, eDiscovery, Security & Compliance, Sentinel platform operations, and more.\n\nM365AuditGeneral_CL table with **319 columns** captures detailed activity across Microsoft 365.\n\n**Prerequisites:** Entra ID app with Office 365 Management API permissions and Audit.General subscription.",
+                    "descriptionMarkdown": "Microsoft 365 Audit.General connector ingests generic audit logs from Microsoft 365 workloads **not covered by dedicated connectors** (such as Exchange, SharePoint, Teams, Dynamics, Purview). Includes Copilot, Power BI, Viva suite, Defender for Office 365, eDiscovery, Security & Compliance, Sentinel platform operations, and more.\n\nM365AuditGeneral_CL table with **319 columns** captures detailed activity across Microsoft 365.\n\n**Prerequisites:** Entra ID app with Office 365 Management API permissions and Audit.General subscription.",
                     "graphQueriesTableName": "M365AuditGeneral_CL",
                     "graphQueries": [
                         {
