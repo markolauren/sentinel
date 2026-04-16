@@ -1321,6 +1321,66 @@
                             {
                                 "name": "SensitiveInfoDetectionIsIncluded",
                                 "type": "boolean"
+                            },
+                            {
+                                "name": "SensitiveInfoTypeData",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "PolicyMatchInfo",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "MatchedPolicies",
+                                "type": "dynamic"
+                            },
+                            {
+                                "name": "DeviceName",
+                                "type": "string"
+                            },
+                            {
+                                "name": "TargetFilePath",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Application",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Sha256",
+                                "type": "string"
+                            },
+                            {
+                                "name": "Sha1",
+                                "type": "string"
+                            },
+                            {
+                                "name": "EnforcementMode",
+                                "type": "int"
+                            },
+                            {
+                                "name": "FileSize",
+                                "type": "long"
+                            },
+                            {
+                                "name": "FileType",
+                                "type": "string"
+                            },
+                            {
+                                "name": "SourceLocationType",
+                                "type": "int"
+                            },
+                            {
+                                "name": "DestinationLocationType",
+                                "type": "int"
+                            },
+                            {
+                                "name": "MDATPDeviceId",
+                                "type": "string"
+                            },
+                            {
+                                "name": "RMSEncrypted",
+                                "type": "boolean"
                             }
                         ]
                     }
@@ -2875,6 +2935,66 @@
                             "name": "SensitiveInfoDetectionIsIncluded",
                             "type": "boolean",
                             "description": "Indicates whether the event contains the value of the sensitive data type and surrounding context from the source content"
+                        },
+                        {
+                            "name": "SensitiveInfoTypeData",
+                            "type": "dynamic"
+                        },
+                        {
+                            "name": "PolicyMatchInfo",
+                            "type": "dynamic"
+                        },
+                        {
+                            "name": "MatchedPolicies",
+                            "type": "dynamic"
+                        },
+                        {
+                            "name": "DeviceName",
+                            "type": "string"
+                        },
+                        {
+                            "name": "TargetFilePath",
+                            "type": "string"
+                        },
+                        {
+                            "name": "Application",
+                            "type": "string"
+                        },
+                        {
+                            "name": "Sha256",
+                            "type": "string"
+                        },
+                        {
+                            "name": "Sha1",
+                            "type": "string"
+                        },
+                        {
+                            "name": "EnforcementMode",
+                            "type": "int"
+                        },
+                        {
+                            "name": "FileSize",
+                            "type": "long"
+                        },
+                        {
+                            "name": "FileType",
+                            "type": "string"
+                        },
+                        {
+                            "name": "SourceLocationType",
+                            "type": "int"
+                        },
+                        {
+                            "name": "DestinationLocationType",
+                            "type": "int"
+                        },
+                        {
+                            "name": "MDATPDeviceId",
+                            "type": "string"
+                        },
+                        {
+                            "name": "RMSEncrypted",
+                            "type": "boolean"
                         }
                     ]
                 }
@@ -3006,7 +3126,7 @@
                     "id": "M365AuditGeneralCCP",
                     "title": "Microsoft 365 Audit.General",
                     "publisher": "Marko Lauren",
-                    "descriptionMarkdown": "Microsoft 365 Audit.General connector ingests generic audit logs from Microsoft 365 workloads **not covered by dedicated connectors** (such as Exchange, Sharepoint, Teams, Dynamics, Purview). Includes Copilot, Power BI, Viva suite, Defender for Office 365, eDiscovery, Security & Compliance, Sentinel platform operations, and more.\n\nM365AuditGeneral_CL table with **304 columns** captures detailed activity across Microsoft 365.\n\n**Prerequisites:** Entra ID app with Office 365 Management API permissions and Audit.General subscription.",
+                    "descriptionMarkdown": "Microsoft 365 Audit.General connector ingests generic audit logs from Microsoft 365 workloads **not covered by dedicated connectors** (such as Exchange, SharePoint, Teams, Dynamics, Purview). Includes Copilot, Power BI, Viva suite, Defender for Office 365, eDiscovery, Security & Compliance, Sentinel platform operations, and more.\n\nM365AuditGeneral_CL table with **319 columns** captures detailed activity across Microsoft 365.\n\n**Prerequisites:** Entra ID app with Office 365 Management API permissions and Audit.General subscription.",
                     "graphQueriesTableName": "M365AuditGeneral_CL",
                     "graphQueries": [
                         {
@@ -3197,7 +3317,7 @@
                     "id": "M365AuditDLPCCP",
                     "title": "Microsoft 365 Audit.DLP",
                     "publisher": "Marko Lauren",
-                    "descriptionMarkdown": "Microsoft 365 Audit.DLP connector ingests **DLP events for all workloads** from the Office 365 Management Activity API.\\n\\nData is ingested to the same **M365AuditGeneral_CL** table with **304 columns** including dedicated DLP schema fields (SharePointMetaData, ExchangeMetaData, EndpointMetaData, ExceptionInfo, PolicyDetails, SensitiveInfoDetectionIsIncluded).\\n\\n**Prerequisites:** Entra ID app with Office 365 Management API permissions and DLP.All subscription.",
+                    "descriptionMarkdown": "Microsoft 365 Audit.DLP connector ingests **DLP events for all workloads** from the Office 365 Management Activity API.\\n\\nData is ingested to the same **M365AuditGeneral_CL** table with **319 columns** including dedicated DLP schema fields (SharePointMetaData, ExchangeMetaData, EndpointMetaData, ExceptionInfo, PolicyDetails, SensitiveInfoDetectionIsIncluded).\\n\\n**Prerequisites:** Entra ID app with Office 365 Management API permissions and DLP.All subscription.",
                     "graphQueriesTableName": "M365AuditGeneral_CL",
                     "graphQueries": [
                         {
@@ -3668,3 +3788,4 @@
         }
     ]
 }
+
