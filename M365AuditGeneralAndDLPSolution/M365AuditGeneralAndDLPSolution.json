@@ -61,7 +61,7 @@
         "_solutionName": "Microsoft 365 Audit General & DLP",
         "_solutionVersion": "1.0.0",
         "_solutionAuthor": "Marko Lauren",
-        "_packageIcon": "\u003cimg src=\"https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/Logos/Microsoft_logo.svg\" width=\"75px\" height=\"75px\"\u003e",
+        "_packageIcon": "<img src=\"https://raw.githubusercontent.com/Azure/Azure-Sentinel/master/Logos/Microsoft_logo.svg\" width=\"75px\" height=\"75px\">",
         "_solutionId": "azuresentinel.azure-sentinel-solution-microsoft365auditgeneraldlp",
         "dataConnectorVersionConnectorDefinition": "1.0.0",
         "dataConnectorVersionConnections": "1.0.0",
@@ -1381,6 +1381,14 @@
                             {
                                 "name": "RMSEncrypted",
                                 "type": "boolean"
+                            },
+                            {
+                                "name": "EvaluationSource",
+                                "type": "string"
+                            },
+                            {
+                                "name": "IncidentId",
+                                "type": "string"
                             }
                         ]
                     }
@@ -2995,6 +3003,16 @@
                         {
                             "name": "RMSEncrypted",
                             "type": "boolean"
+                        },
+                        {
+                            "name": "EvaluationSource",
+                            "type": "string",
+                            "description": "DLP evaluation source (e.g., DlpPolicyEventBasedAssistantOneDriveForBusiness)"
+                        },
+                        {
+                            "name": "IncidentId",
+                            "type": "string",
+                            "description": "DLP incident identifier (GUID)"
                         }
                     ]
                 }
@@ -3023,7 +3041,9 @@
                     "tier": "Community"
                 },
                 "categories": {
-                    "domains": ["Cloud Provider"],
+                    "domains": [
+                        "Cloud Provider"
+                    ],
                     "verticals": []
                 },
                 "dependencies": {
@@ -3184,15 +3204,15 @@
                     "instructionSteps": [
                         {
                             "title": "1. Register an Entra ID Application",
-                            "description": "⚠️ If you already have an app from the Audit.DLP connector, you can **reuse the same app**. Otherwise:\\n\\n1. Go to **Microsoft Entra ID** \u003e **App registrations** \u003e **New registration**\n2. Name: `Sentinel-M365AuditGeneral` (or your preferred name)\n3. **Supported account types**: Accounts in this organizational directory only\n4. Click **Register**\n5. Note the **Application (client) ID** - you'll need this later\n6. Go to **Certificates \u0026 secrets** \u003e **New client secret**\n7. Add a description, set expiration, click **Add**\n8. **Copy the secret Value immediately** - it won't be shown again"
+                            "description": "⚠️ If you already have an app from the Audit.DLP connector, you can **reuse the same app**. Otherwise:\\n\\n1. Go to **Microsoft Entra ID** > **App registrations** > **New registration**\n2. Name: `Sentinel-M365AuditGeneral` (or your preferred name)\n3. **Supported account types**: Accounts in this organizational directory only\n4. Click **Register**\n5. Note the **Application (client) ID** - you'll need this later\n6. Go to **Certificates & secrets** > **New client secret**\n7. Add a description, set expiration, click **Add**\n8. **Copy the secret Value immediately** - it won't be shown again"
                         },
                         {
                             "title": "2. Configure API Permissions",
-                            "description": "⚠️ Audit.General requires **ActivityFeed.Read** permission (different from Audit.DLP which needs ActivityFeed.ReadDlp).\n\n1. In your app registration, go to **API permissions** \u003e **Add a permission**\n2. Select **Office 365 Management APIs**\n3. Choose **Application permissions**\n4. Select **ActivityFeed.Read**\n5. Click **Add permissions**\n6. Click **Grant admin consent** for your tenant\n7. Verify the permission shows as **Granted**"
+                            "description": "⚠️ Audit.General requires **ActivityFeed.Read** permission (different from Audit.DLP which needs ActivityFeed.ReadDlp).\n\n1. In your app registration, go to **API permissions** > **Add a permission**\n2. Select **Office 365 Management APIs**\n3. Choose **Application permissions**\n4. Select **ActivityFeed.Read**\n5. Click **Add permissions**\n6. Click **Grant admin consent** for your tenant\n7. Verify the permission shows as **Granted**"
                         },
                         {
                             "title": "3. Subscribe to Audit.General Content",
-                            "description": "Run this PowerShell script to subscribe to the Audit.General content type (required before data flows):\n\n```powershell\n# Replace with your values\n$tenantId = 'YOUR_TENANT_ID'\n$clientId = 'YOUR_CLIENT_ID'\n$clientSecret = 'YOUR_CLIENT_SECRET'\n$publisherId = $tenantId  # Publisher identifier is your tenant ID\n\n# Get OAuth token\n$body = @{\n    grant_type    = 'client_credentials'\n    client_id     = $clientId\n    client_secret = $clientSecret\n    resource      = 'https://manage.office.com'\n}\n$tokenResponse = Invoke-RestMethod -Method Post -Uri \"https://login.microsoftonline.com/$tenantId/oauth2/token\" -Body $body\n$token = $tokenResponse.access_token\n\n# Start subscription\n$headers = @{Authorization = \"Bearer $token\"}\n$subscribeUri = \"https://manage.office.com/api/v1.0/$tenantId/activity/feed/subscriptions/start?contentType=Audit.General\u0026PublisherIdentifier=$publisherId\"\nInvoke-RestMethod -Method Post -Uri $subscribeUri -Headers $headers\n```"
+                            "description": "Run this PowerShell script to subscribe to the Audit.General content type (required before data flows):\n\n```powershell\n# Replace with your values\n$tenantId = 'YOUR_TENANT_ID'\n$clientId = 'YOUR_CLIENT_ID'\n$clientSecret = 'YOUR_CLIENT_SECRET'\n$publisherId = $tenantId  # Publisher identifier is your tenant ID\n\n# Get OAuth token\n$body = @{\n    grant_type    = 'client_credentials'\n    client_id     = $clientId\n    client_secret = $clientSecret\n    resource      = 'https://manage.office.com'\n}\n$tokenResponse = Invoke-RestMethod -Method Post -Uri \"https://login.microsoftonline.com/$tenantId/oauth2/token\" -Body $body\n$token = $tokenResponse.access_token\n\n# Start subscription\n$headers = @{Authorization = \"Bearer $token\"}\n$subscribeUri = \"https://manage.office.com/api/v1.0/$tenantId/activity/feed/subscriptions/start?contentType=Audit.General&PublisherIdentifier=$publisherId\"\nInvoke-RestMethod -Method Post -Uri $subscribeUri -Headers $headers\n```"
                         },
                         {
                             "title": "4. Connect the Data Connector",
@@ -3379,7 +3399,7 @@
                     "instructionSteps": [
                         {
                             "title": "1. Register an Entra ID Application",
-                            "description": "⚠️ If you already have an app from the Audit.General connector, you can **reuse the same app**. Otherwise:\\n\\n1. Go to **Microsoft Entra ID** \u003e **App registrations** \u003e **New registration**\\n2. Name: `Sentinel-M365Audit` (or your preferred name)\\n3. **Supported account types**: Accounts in this organizational directory only\\n4. Click **Register**\\n5. Note the **Application (client) ID** - you'll need this later\\n6. Go to **Certificates \u0026 secrets** \u003e **New client secret**\\n7. Add a description, set expiration, click **Add**\\n8. **Copy the secret Value immediately** - it won't be shown again"
+                            "description": "⚠️ If you already have an app from the Audit.General connector, you can **reuse the same app**. Otherwise:\\n\\n1. Go to **Microsoft Entra ID** > **App registrations** > **New registration**\\n2. Name: `Sentinel-M365Audit` (or your preferred name)\\n3. **Supported account types**: Accounts in this organizational directory only\\n4. Click **Register**\\n5. Note the **Application (client) ID** - you'll need this later\\n6. Go to **Certificates & secrets** > **New client secret**\\n7. Add a description, set expiration, click **Add**\\n8. **Copy the secret Value immediately** - it won't be shown again"
                         },
                         {
                             "title": "2. Configure API Permissions",
@@ -3788,4 +3808,3 @@
         }
     ]
 }
-

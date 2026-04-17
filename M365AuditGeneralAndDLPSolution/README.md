@@ -10,7 +10,7 @@ This solution provides **two codeless connectors (CCF)** for ingesting Microsoft
 
 ## Overview
 
-These connectors use the **Office 365 Management Activity API** to retrieve Microsoft 365 audit logs into a shared **304-column schema** covering **30 specialty workload types**:
+These connectors use the **Office 365 Management Activity API** to retrieve Microsoft 365 audit logs into a shared **321-column schema** covering **30 specialty workload types**:
 
 - **Audit.General connector**: 29 specialty workloads (Copilot, Power BI, Viva suite, Security & Compliance, eDiscovery, Sentinel platform, etc.)
 - **Audit.DLP connector**: Data loss prevention (DLP) events in Microsoft Purview available for Exchange Online, Endpoint(devices), and SharePoint and OneDrive.
@@ -120,7 +120,7 @@ The connector uses `"rateLimitQPS": 10` to control the maximum number of API req
 
 ## Data Schema
 
-Both connectors ingest data into the **shared** `M365AuditGeneral_CL` custom table with **304 columns** covering **30 workload schemas** (29 from Audit.General + 1 DLP schema).
+Both connectors ingest data into the **shared** `M365AuditGeneral_CL` custom table with **321 columns** covering **30 workload schemas** (29 from Audit.General + 1 DLP schema).
 
 ### Core Common Fields (14 fields)
 
@@ -177,7 +177,7 @@ The schema includes dedicated typed columns for 30 specialty workloads:
 - **Microsoft Sentinel Data Lake** (42 fields): Notebooks, Jobs, KQL queries, AI Tools, Graph operations, lake onboarding
 - **DLP (Data Loss Prevention)** (6 fields): SharePointMetaData, ExchangeMetaData, EndpointMetaData, ExceptionInfo, PolicyDetails, SensitiveInfoDetectionIsIncluded
 
-**Total Schema**: 304 columns utilizing 61% of Azure table capacity (500 column limit), leaving 39% headroom for future Microsoft API additions.
+**Total Schema**: 321 columns utilizing 64% of Azure table capacity (500 column limit), leaving 36% headroom for future Microsoft API additions.
 
 **Note**: DLP events from the DLP connector can be identified by filtering on `RecordType in (11, 13, 33, 63, 99, 100, 107, 187)`.
 
@@ -188,7 +188,7 @@ The solution creates a complete dual-connector data ingestion pipeline with **sh
 ### Deployed Resources:
 - **Data Collection Endpoint (DCE)**: `dce-m365-auditgeneral` - Shared network endpoint for secure data ingestion
 - **Data Collection Rule (DCR)**: `dcr-m365-auditgeneral` - Shared data stream definition with transformation logic and filtering
-- **Custom Table**: `M365AuditGeneral_CL` - Shared Log Analytics table with 304 structured columns covering 30 workload schemas
+- **Custom Table**: `M365AuditGeneral_CL` - Shared Log Analytics table with 321 structured columns covering 30 workload schemas
 - **Audit.General Data Connector**: RestApiPoller for Audit.General content type
 - **Audit.DLP Data Connector**: RestApiPoller for DLP.All content type
 
@@ -218,7 +218,7 @@ Both connectors share the same DCE, DCR, and table - differing only in the API e
    - DCR applies KQL transform: `source | where RecordType != 21 and RecordType != 278 and RecordType != 25 and RecordType != 71 and RecordType != 72 and RecordType != 75 and RecordType != 82 and RecordType != 83 and RecordType != 84 and RecordType != 93 and RecordType != 94 and RecordType != 95 and RecordType != 96 and RecordType != 97`
    - **Intelligent filtering**: Excludes Dynamics 365 (RecordTypes 21, 278), Teams (RecordType 25), and Microsoft Purview Information Protection (RecordTypes 71, 72, 75, 82, 83, 84, 93, 94, 95, 96, 97) events to avoid duplication with dedicated connectors
    - **Automatic type mapping**: DCR engine handles type conversions based on schema declarations
-   - Projects 304 structured columns across 30 workload schemas
+   - Projects 321 structured columns across 30 workload schemas
 
 6. **Ingestion**:
    - Transformed data sent to custom table via DCE
@@ -252,13 +252,13 @@ Contributions are welcome! Please submit pull requests or open issues for bugs a
 
 ### Version 1.0.0
 - **Dual-connector solution**: Audit.General + Audit.DLP connectors sharing infrastructure
-- **Comprehensive 304-column schema** covering 30 specialty workload types (29 general + 1 DLP)
+- **Comprehensive 321-column schema** covering 30 specialty workload types (29 general + 1 DLP)
 - **Shared infrastructure**: Both connectors use same DCE, DCR, and table - efficient resource utilization
 - **Intelligent filtering**: Excludes Dynamics 365 (RecordTypes 21, 278), Teams (RecordType 25), and Microsoft Purview Information Protection events (71, 72, 75, 82, 83, 84, 93, 94, 95, 96, 97) to avoid duplication with dedicated connectors
 - **Complete CCF (codeless connector framework) implementation**: DCE, DCR with KQL transformation, custom table, connector definition, OAuth 2.0 authentication
 - **Nested API calls**: Two-step content blob fetching pattern for efficient data retrieval
 - **Simplified deployment**: Single ARM template deploys both connectors with only 2 required parameters (workspace, workspace-location)
-- **Production-ready architecture**: Dependency management, proper column naming, type safety, 61% table capacity utilization
+- **Production-ready architecture**: Dependency management, proper column naming, type safety, 64% table capacity utilization
 
 ---
 
