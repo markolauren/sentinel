@@ -3070,7 +3070,7 @@
                 "contentProductId": "[concat(substring(variables('_solutionId'), 0, 50),'-','sl','-', uniqueString(concat(variables('_solutionId'),'-','Solution','-',variables('_solutionId'),'-', variables('_solutionVersion'))))]",
                 "displayName": "[variables('_solutionName')]",
                 "publisherDisplayName": "[variables('_solutionId')]",
-                "descriptionHtml": "Dual-connector solution for ingesting Microsoft 365 audit logs from Office 365 Management Activity API. Includes Audit.General connector (29 specialty workloads) and Audit.DLP connector sharing a 304-column schema with dedicated fields for Copilot, Power BI, Viva suite, Security & Compliance, eDiscovery, Sentinel platform operations, and DLP events.",
+                "descriptionHtml": "Dual-connector solution for ingesting Microsoft 365 audit logs from Office 365 Management Activity API. Includes Audit.General connector (29 specialty workloads) and Audit.DLP connector sharing a 321-column schema with dedicated fields for Copilot, Power BI, Viva suite, Security & Compliance, eDiscovery, Sentinel platform operations, and DLP events.",
                 "icon": "[variables('_packageIcon')]"
             }
         },
@@ -3146,7 +3146,7 @@
                     "id": "M365AuditGeneralCCP",
                     "title": "Microsoft 365 Audit.General",
                     "publisher": "Marko Lauren",
-                    "descriptionMarkdown": "Microsoft 365 Audit.General connector ingests generic audit logs from Microsoft 365 workloads **not covered by dedicated connectors** (such as Exchange, SharePoint, Teams, Dynamics, Purview). Includes Copilot, Power BI, Viva suite, Defender for Office 365, eDiscovery, Security & Compliance, Sentinel platform operations, and more.\n\nM365AuditGeneral_CL table with **319 columns** captures detailed activity across Microsoft 365.\n\n**Prerequisites:** Entra ID app with Office 365 Management API permissions and Audit.General subscription.",
+                    "descriptionMarkdown": "Microsoft 365 Audit.General connector ingests generic audit logs from Microsoft 365 workloads **not covered by dedicated connectors** (such as Exchange, SharePoint, Teams, Dynamics, Purview). Includes Copilot, Power BI, Viva suite, Defender for Office 365, eDiscovery, Security & Compliance, Sentinel platform operations, and more.\n\nM365AuditGeneral_CL table with **321 columns** captures detailed activity across Microsoft 365.\n\n**Prerequisites:** Entra ID app with Office 365 Management API permissions and Audit.General subscription.",
                     "graphQueriesTableName": "M365AuditGeneral_CL",
                     "graphQueries": [
                         {
@@ -3337,7 +3337,7 @@
                     "id": "M365AuditDLPCCP",
                     "title": "Microsoft 365 Audit.DLP",
                     "publisher": "Marko Lauren",
-                    "descriptionMarkdown": "Microsoft 365 Audit.DLP connector ingests **DLP events for all workloads** from the Office 365 Management Activity API.\\n\\nData is ingested to the same **M365AuditGeneral_CL** table with **319 columns** including dedicated DLP schema fields (SharePointMetaData, ExchangeMetaData, EndpointMetaData, ExceptionInfo, PolicyDetails, SensitiveInfoDetectionIsIncluded).\\n\\n**Prerequisites:** Entra ID app with Office 365 Management API permissions and DLP.All subscription.",
+                    "descriptionMarkdown": "Microsoft 365 Audit.DLP connector ingests **DLP events for all workloads** from the Office 365 Management Activity API.\\n\\nData is ingested to the same **M365AuditGeneral_CL** table with **321 columns** including dedicated DLP schema fields (SharePointMetaData, ExchangeMetaData, EndpointMetaData, ExceptionInfo, PolicyDetails, SensitiveInfoDetectionIsIncluded).\\n\\n**Prerequisites:** Entra ID app with Office 365 Management API permissions and DLP.All subscription.",
                     "graphQueriesTableName": "M365AuditGeneral_CL",
                     "graphQueries": [
                         {
