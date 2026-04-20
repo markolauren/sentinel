@@ -120,7 +120,7 @@ The connector uses `"rateLimitQPS": 10` to control the maximum number of API req
 
 ## Data Schema
 
-Both connectors ingest data into the **shared** `M365AuditGeneral_CL` custom table with **321 columns** covering **30 workload schemas** (29 from Audit.General + 1 DLP schema).
+Both connectors ingest data into the **shared** `M365AuditGeneral_CL` custom table covering **30 workload schemas** (29 from Audit.General + 1 DLP schema).
 
 ### Core Common Fields (14 fields)
 
@@ -175,7 +175,7 @@ The schema includes dedicated typed columns for 30 specialty workloads:
 - **Data Center Security Base** (1 field): DataCenterSecurityEventType
 - **Data Center Security Cmdlet** (9 fields): ElevationTime, ElevationApprover, ElevationApprovedTime, ElevationRequestId, ElevationRole, ElevationDuration, GenericInfo, StartTime, EffectiveOrganization
 - **Microsoft Sentinel Data Lake** (42 fields): Notebooks, Jobs, KQL queries, AI Tools, Graph operations, lake onboarding
-- **DLP (Data Loss Prevention)** (6 fields): SharePointMetaData, ExchangeMetaData, EndpointMetaData, ExceptionInfo, PolicyDetails, SensitiveInfoDetectionIsIncluded
+- **DLP (Data Loss Prevention)** (10 fields): SharePointMetaData, ExchangeMetaData, EndpointMetaData, ExceptionInfo, PolicyDetails, SensitiveInfoDetectionIsIncluded, SensitiveInfoDetectionsData, SensitiveInfoTypeData, EvaluationSource, IncidentId
 
 **Total Schema**: 321 columns utilizing 64% of Azure table capacity (500 column limit), leaving 36% headroom for future Microsoft API additions.
 
